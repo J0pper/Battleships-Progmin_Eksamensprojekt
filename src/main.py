@@ -11,8 +11,8 @@ surface = pg.display.set_mode(res)
 clock = pg.time.Clock()
 FPS = 20
 
-newButton = Button(surface, [100, 100], [100, 100], (255, 0, 0))
-
+newButton = Button(surface, [100, 100], [100, 100])
+newButton.set_texture("../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=(0.5))
 
 running = True
 while running:
@@ -29,8 +29,8 @@ while running:
         elif event.type == pg.QUIT:
             running = False
 
-    newButton.draw_button()
-    newButton.on_click()
+    newButton.draw(with_texture=True)
+
     pg.display.flip()
 
 pg.quit()
