@@ -5,7 +5,7 @@ from widgets import Button
 
 pg.init()
 
-res = [800, 800]
+res = [320, 180]
 surface = pg.display.set_mode(res)
 
 clock = pg.time.Clock()
