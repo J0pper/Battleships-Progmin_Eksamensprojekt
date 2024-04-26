@@ -29,7 +29,7 @@ class Button:
         self.set_texture("../textures/test/NO_TEXTURE.png", scale_by=self.size)
 
     def draw(self, with_texture: bool = False):
-        pg.draw.rect(self.surface, self.color, self.buttonRect, border_radius=self.corner_radius)
+        # pg.draw.rect(self.surface, self.color, self.buttonRect, border_radius=self.corner_radius)
 
         if with_texture:
             self.surface.blit(self.buttonTexture, self.pos)
