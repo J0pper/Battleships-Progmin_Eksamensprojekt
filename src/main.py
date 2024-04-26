@@ -1,4 +1,5 @@
 import pygame as pg
+import sys
 
 from widgets import Button
 
@@ -10,13 +11,12 @@ surface = pg.display.set_mode(res)
 clock = pg.time.Clock()
 FPS = 20
 
-newButton = Button(surface, [100, 100], [100, 100], z_index=0)
+newButton: Button = Button(surface, [100, 100], [100, 100], z_index=0)
 newButton.set_texture("../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=0.5, prioritize_texture_size=True)
-newButton2 = Button(surface, [100, 100], [300, 100], z_index=1)
+newButton2: Button = Button(surface, [100, 100], [300, 100], z_index=1)
 newButton2.set_texture("../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=0.5, prioritize_texture_size=True)
-newButton3 = Button(surface, [100, 100], [500, 100], z_index=2)
+newButton3: Button = Button(surface, [100, 100], [500, 100], z_index=2)
 newButton3.set_texture("../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=0.5, prioritize_texture_size=True)
-
 
 running = True
 while running:
@@ -46,3 +46,6 @@ while running:
     pg.display.flip()
 
 pg.quit()
+sys.exit()
+
+

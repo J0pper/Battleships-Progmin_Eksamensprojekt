@@ -65,3 +65,9 @@ class Button:
 
     def remove_texture(self):
         self.buttonTexture = self.defaultTexture
+
+
+class Ship(Button):
+    def __init__(self, surface, size: list = None, pos: list = None, corner_radius: int = 0, z_index: int = 0):
+        super().__init__(surface, size, pos, corner_radius, z_index)
+
