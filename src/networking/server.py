@@ -3,6 +3,7 @@ from _thread import *
 
 # server = "192.168.0.49"
 server = socket.gethostbyname(socket.gethostname())
+print("Server IP-address: ", server)
 port = 5555
 
 # Create the socket for the server.

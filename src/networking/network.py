@@ -5,7 +5,7 @@ class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Creates a new socket per client.
         # self.server = socket.gethostbyname(socket.gethostname())  # Grabs your local IPv4 address.
-        self.server = "192.168.0.25"
+        self.server = input("Server IP-address here: ")
         self.port = 5555  # Specify a free port on your internet connection.
         self.id: str = self.connect_server()  # Connects the client socket with the server.
 
