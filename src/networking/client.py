@@ -2,8 +2,6 @@ import pygame
 from network import Network
 import sys
 
-print("I GOT THIS FAR")
-
 RESOLUTION: list[int, int] = [500, 500]
 window = pygame.display.set_mode(RESOLUTION)
 pygame.display.set_caption("Client")
