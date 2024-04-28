@@ -24,9 +24,9 @@ class Button:
 
         self.buttonRect = pg.Rect(*self.pos, *self.size)
 
-        self.defaultTexture = pg.image.load("../textures/test/NO_TEXTURE.png")
+        self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png")
         self.buttonTexture = self.defaultTexture
-        self.set_texture("../textures/test/NO_TEXTURE.png", scale_by=self.size)
+        self.set_texture("../../textures/test/NO_TEXTURE.png", scale_by=self.size)
 
     def draw(self, with_texture: bool = False):
         # pg.draw.rect(self.surface, self.color, self.buttonRect, border_radius=self.corner_radius)
