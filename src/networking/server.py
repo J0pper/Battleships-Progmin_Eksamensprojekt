@@ -25,7 +25,7 @@ def make_pos(position: tuple):
 
 def threaded_client(connection, player):
     connection.send(str.encode(make_pos(clientPositions[player])))
-    reply = ""
+
     while True:
         try:
             data = read_pos(connection.recv(2048).decode())
