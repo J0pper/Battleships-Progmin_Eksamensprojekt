@@ -24,7 +24,7 @@ class Button:
 
         self.buttonRect = pg.Rect(*self.pos, *self.size)
 
-        self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png")
+        self.defaultTexture = pg.image.load("../../textures/test/Marck_SUCK.png")
         self.buttonTexture = self.defaultTexture
         self.set_texture("../../textures/test/NO_TEXTURE.png", scale_by=self.size)
 
@@ -35,9 +35,12 @@ class Button:
             self.surface.blit(self.buttonTexture, self.pos)
 
     def on_click(self, mouse_pos) -> bool:
+        if not self.clickable:
+            return False
         if not self.buttonRect.collidepoint(mouse_pos):
             return False
         self.buttonTexture = self.defaultTexture
+        print()
         return True
 
     def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None, prioritize_texture_size: bool = False):
@@ -70,4 +73,3 @@ class Button:
 class Ship(Button):
     def __init__(self, surface, size: list = None, pos: list = None, corner_radius: int = 0, z_index: int = 0):
         super().__init__(surface, size, pos, corner_radius, z_index)
-

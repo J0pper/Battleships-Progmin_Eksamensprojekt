@@ -25,7 +25,7 @@ class TitleScreen:
         scaleFactor = [res[0] / 320, res[1] / 180]
 
         self.background.set_texture("../textures/title_screen/background.png", linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
-        self.title.set_texture("../textures/title_screen/startbutton.png", linear_scaling=True, scale_by=scaleFactor[0],  prioritize_texture_size=True)
+        self.title.set_texture("../textures/title_screen/start_button.png", linear_scaling=True, scale_by=scaleFactor[0],  prioritize_texture_size=True)
         self.startButton.set_texture("../textures/title_screen/title.png", linear_scaling=True, scale_by=scaleFactor[0],  prioritize_texture_size=True)
 
     def draw(self):
