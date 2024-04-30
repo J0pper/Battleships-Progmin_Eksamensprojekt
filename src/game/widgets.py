@@ -4,7 +4,8 @@ import pygame as pg
 class Button:
     registry = []
 
-    def __init__(self, surface, size: list = None, pos: list = None, corner_radius: int = 0, z_index: int = 0):
+    def __init__(self, surface, size: list = None, pos: list = None, corner_radius: int = 0,
+                 z_index: int = 0, action=None):
         self.registry.append([self, z_index])
 
         self.surface = surface
@@ -17,6 +18,8 @@ class Button:
         self.pos: list = pos
         self.corner_radius = corner_radius
 
+        self.action = action
+
         self.color: list = [255, 255, 255]
         self.text: str = ""
         self.clickable: bool = True
@@ -24,9 +27,9 @@ class Button:
 
         self.buttonRect = pg.Rect(*self.pos, *self.size)
 
-        self.defaultTexture = pg.image.load("../textures/test/NO_TEXTURE.png")
+        self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png")
         self.buttonTexture = self.defaultTexture
-        self.set_texture("../textures/test/NO_TEXTURE.png", scale_by=self.size)
+        self.set_texture("../../textures/test/NO_TEXTURE.png", scale_by=self.size)
 
     def draw(self, with_texture: bool = False):
         # pg.draw.rect(self.surface, self.color, self.buttonRect, border_radius=self.corner_radius)
@@ -35,12 +38,16 @@ class Button:
             self.surface.blit(self.buttonTexture, self.pos)
 
     def on_click(self, mouse_pos) -> bool:
+        if not self.clickable:
+            return False
         if not self.buttonRect.collidepoint(mouse_pos):
             return False
-        self.buttonTexture = self.defaultTexture
+        # self.buttonTexture = self.defaultTexture
+        print(self.action())
         return True
 
-    def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None, prioritize_texture_size: bool = False):
+    def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None,
+                    prioritize_texture_size: bool = False):
         self.buttonTexture = pg.image.load(texture_path)
 
         if scale_by is None:
@@ -70,4 +77,3 @@ class Button:
 class Ship(Button):
     def __init__(self, surface, size: list = None, pos: list = None, corner_radius: int = 0, z_index: int = 0):
         super().__init__(surface, size, pos, corner_radius, z_index)
-

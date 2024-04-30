@@ -7,7 +7,10 @@ from game_states import TitleScreen
 pg.init()
 
 # DISPLAY
-surface = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+RES = pg.display.Info().current_w, pg.display.Info().current_h
+surface = pg.display.set_mode((RES[0]/2, RES[1]/2), pg.RESIZABLE)
+pg.display.set_caption("Ships & Explosions")
+# surface = pg.display.set_mode((0, 0), pg.FULLSCREEN)
 
 # SPEED/FPS
 clock = pg.time.Clock()
@@ -16,11 +19,11 @@ FPS = 20
 
 # BUTTONS
 newButton: Button = Button(surface, [100, 100], [100, 100], z_index=0)
-newButton.set_texture("../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=0.5, prioritize_texture_size=True)
+newButton.set_texture("../../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=0.5, prioritize_texture_size=True)
 newButton2: Button = Button(surface, [100, 100], [300, 100], z_index=1)
-newButton2.set_texture("../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=0.5, prioritize_texture_size=True)
+newButton2.set_texture("../../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=0.5, prioritize_texture_size=True)
 newButton3: Button = Button(surface, [100, 100], [500, 100], z_index=2)
-newButton3.set_texture("../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=0.5, prioritize_texture_size=True)
+newButton3.set_texture("../../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=0.5, prioritize_texture_size=True)
 
 titleScreen = TitleScreen(surface)
 
