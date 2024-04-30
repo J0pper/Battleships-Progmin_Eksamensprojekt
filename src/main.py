@@ -13,6 +13,7 @@ surface = pg.display.set_mode((0, 0), pg.FULLSCREEN)
 clock = pg.time.Clock()
 FPS = 20
 
+
 # BUTTONS
 newButton: Button = Button(surface, [100, 100], [100, 100], z_index=0)
 newButton.set_texture("../textures/test/Marck_SUCK.png", linear_scaling=True, scale_by=0.5, prioritize_texture_size=True)
