@@ -7,7 +7,7 @@ class Node:
     def __init__(self, surface, size: list = None, pos: list = None, corner_radius: int = 0,
                  z_index: int = 0, action=None):
         self.registry.append([self, z_index])
-
+        print(self.registry)
         self.surface = surface
 
         if size is None:

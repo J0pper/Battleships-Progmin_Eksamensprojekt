@@ -36,7 +36,7 @@ class TitleScreen:
         self.startButton.draw(with_texture=True)
 
 
-class Table:
+class GameScreen:
     def __init__(self, surface):
         self.test = Node(surface, [320, 180], [0, 0], z_index=0)
         self.test.set_texture("../../textures/test/Marck_SUCK.png")
