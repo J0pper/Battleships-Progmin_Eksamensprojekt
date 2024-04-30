@@ -1,4 +1,4 @@
-from widgets import Button
+from widgets import Node
 
 
 class GameStateManager:
@@ -14,12 +14,11 @@ class GameStateManager:
 
 class TitleScreen:
     def __init__(self, surface):
-        self.background = Button(surface, [320, 180], [0, 0], z_index=0)
-        self.title = Button(surface, [320, 180], [0, 0], z_index=1)
-        self.startButton = Button(surface, [320, 180], [0, 0], z_index=0, action=lambda: sum([1, 2, 3]))
+        self.background = Node(surface, [320, 180], [0, 0], z_index=0)
+        self.title = Node(surface, [320, 180], [0, 0], z_index=1)
+        self.startButton = Node(surface, [320, 180], [0, 0], z_index=0, action=lambda: sum([1, 2, 3]))
 
-        self.background.clickable = False
-        self.title.clickable = False
+        self.startButton.clickable = True
 
         res = surface.get_size()
         scaleFactor = [res[0] / 320, res[1] / 180]
@@ -39,7 +38,7 @@ class TitleScreen:
 
 class Table:
     def __init__(self, surface):
-        self.test = Button(surface, [320, 180], [0, 0], z_index=0)
+        self.test = Node(surface, [320, 180], [0, 0], z_index=0)
         self.test.set_texture("../../textures/test/Marck_SUCK.png")
 
     def draw(self):
