@@ -6,11 +6,10 @@ class GameScreenManager:
     currentScreen = None
 
     def get_state(self):
-        return self.currentScreen
+        return GameScreenManager.currentScreen
 
     def set_state(self, new_screen):
-        self.currentScreen = new_screen
-        return self.currentScreen
+        GameScreenManager.currentScreen = new_screen
 
 
 class TitleScreen(GameScreenManager):
@@ -20,7 +19,7 @@ class TitleScreen(GameScreenManager):
         self.background = Node(self.surface, [320, 180], [0, 0], z_index=0)
         self.title = Node(self.surface, [320, 180], [0, 0], z_index=1)
         self.startButton = Node(self.surface, [320, 180], [0, 0], z_index=0,
-                                action=lambda: self.update(GameScreenManager.gameScreens["gameScreen"]))
+                                action=lambda: GameScreenManager.set_state(self, GameScreenManager.gameScreens["gameScreen"]))
 
         self.startButton.clickable = True
 
@@ -33,9 +32,6 @@ class TitleScreen(GameScreenManager):
                                scale_by=self.scaleFactor[0],  prioritize_texture_size=True)
         self.startButton.set_texture("../../textures/title_screen/NORMAL_Start.png",
                                      linear_scaling=True, scale_by=self.scaleFactor[0], prioritize_texture_size=True)
-
-    def update(self, new_screen):
-        GameScreenManager.currentScreen = new_screen
 
     def draw(self):
         self.background.draw(with_texture=True)
