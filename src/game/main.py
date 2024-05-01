@@ -2,7 +2,7 @@ import pygame as pg
 import sys
 
 from widgets import Node
-from game_states import TitleScreen, GameScreen
+from game_states import GameScreenManager, TitleScreen, GameScreen
 
 pg.init()
 
@@ -17,7 +17,12 @@ clock = pg.time.Clock()
 FPS = 20
 
 titleScreen = TitleScreen(surface)
-# gameScreen = GameScreen()
+gameScreen = GameScreen(surface)
+gameScreenManager = GameScreenManager()
+GameScreenManager.gameScreens = {"titleScreen": titleScreen, "gameScreen": gameScreen}
+GameScreenManager.currentScreen = titleScreen
+# titleScreen.set_up()
+
 
 running = True
 while running:
@@ -35,12 +40,14 @@ while running:
             running = False
         elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             mousePos = pg.mouse.get_pos()
-            zSortedButtons = sorted(Node.registry, key=lambda z_index: z_index[1])
+            zSortedButtons = sorted(Node.registry, key=lambda z_index: z_index[-1])
             for button in zSortedButtons:
                 if button[0].on_click(mousePos):
                     break
 
-    titleScreen.draw()
+    gameScreenManager.get_state().draw()
+    # titleScreen.draw()
+    print(gameScreenManager.currentScreen)
 
     pg.display.flip()
 

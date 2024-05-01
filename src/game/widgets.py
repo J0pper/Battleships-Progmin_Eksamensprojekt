@@ -7,7 +7,6 @@ class Node:
     def __init__(self, surface, size: list = None, pos: list = None, corner_radius: int = 0,
                  z_index: int = 0, action=None):
         self.registry.append([self, z_index])
-        print(self.registry)
         self.surface = surface
 
         if size is None:
@@ -43,7 +42,7 @@ class Node:
         if not self.buttonRect.collidepoint(mouse_pos):
             return False
         # self.buttonTexture = self.defaultTexture
-        print(self.action())
+        self.action()
         return True
 
     def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None,
