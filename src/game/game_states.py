@@ -34,14 +34,14 @@ class TitleScreen:
         self.startButton.clickable = True
 
         res = surface.get_size()
-        self.scaleFactor = [res[0] / 320, res[1] / 180]
+        scaleFactor = [res[0] / 320, res[1] / 180]
 
         self.background.set_texture("../../textures/title_screen/background.png", linear_scaling=True,
-                                    scale_by=self.scaleFactor[0], prioritize_texture_size=True)
+                                    scale_by=scaleFactor[0], prioritize_texture_size=True)
         self.title.set_texture("../../textures/title_screen/title.png", linear_scaling=True,
-                               scale_by=self.scaleFactor[0],  prioritize_texture_size=True)
+                               scale_by=scaleFactor[0],  prioritize_texture_size=True)
         self.startButton.set_texture("../../textures/title_screen/NORMAL_Start.png",
-                                     linear_scaling=True, scale_by=self.scaleFactor[0], prioritize_texture_size=True)
+                                     linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
 
     def draw(self):
         self.background.draw(with_texture=True)
