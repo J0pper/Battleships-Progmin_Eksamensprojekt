@@ -41,8 +41,10 @@ class Node:
             return False
         if not self.buttonRect.collidepoint(mouse_pos):
             return False
-        # self.buttonTexture = self.defaultTexture
-        self.action()
+        if type(self.action[1]()).__name__ != self.action[2]:
+            return False
+
+        self.action[0]()
         return True
 
     def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None,
@@ -73,6 +75,8 @@ class Node:
         self.buttonTexture = self.defaultTexture
 
 
+"""
 class Ship(Node):
     def __init__(self, surface, size: list = None, pos: list = None, corner_radius: int = 0, z_index: int = 0):
         super().__init__(surface, size, pos, corner_radius, z_index)
+"""

@@ -21,7 +21,6 @@ gameScreen = GameScreen(surface)
 gameScreenManager = GameScreenManager()
 GameScreenManager.gameScreens = {"titleScreen": titleScreen, "gameScreen": gameScreen}
 GameScreenManager.currentScreen = titleScreen
-# titleScreen.set_up()
 
 
 running = True
@@ -45,9 +44,7 @@ while running:
                 if button[0].on_click(mousePos):
                     break
 
-    gameScreenManager.get_state().draw()
-    # titleScreen.draw()
-    print(gameScreenManager.currentScreen)
+    gameScreenManager.get_screen().draw()
 
     pg.display.flip()
 
