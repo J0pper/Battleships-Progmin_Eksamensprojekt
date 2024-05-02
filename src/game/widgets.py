@@ -41,7 +41,7 @@ class Node:
             return False
         if not self.buttonRect.collidepoint(mouse_pos):
             return False
-        if type(self.action[1]()).__name__ != self.action[2]:
+        if self.action[1]() != self.action[2]:
             return False
 
         self.action[0]()

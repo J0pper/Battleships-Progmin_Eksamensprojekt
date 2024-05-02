@@ -29,7 +29,7 @@ class TitleScreen:
         self.startButton = Node(self.surface, [320, 180], [0, 0], z_index=0,
                                 action=[lambda: set_scene(gameScenes["gameScreen"]),
                                         get_scene,
-                                        type(self).__name__])
+                                        self])
 
         self.startButton.clickable = True
 
