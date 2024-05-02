@@ -1,26 +1,34 @@
 from widgets import Node
 
 
-class GameScreenManager:
-    gameScreens: dict = None
-    currentScreen = None
-
-    def get_screen(self):
-        return GameScreenManager.currentScreen
-
-    def set_screen(self, new_screen):
-        GameScreenManager.currentScreen = new_screen
+gameScenes: dict = {}
+currentScene = None
 
 
-class TitleScreen(GameScreenManager):
+def get_scene():
+    global currentScene
+    return currentScene
+
+
+def set_scene(new_scene):
+    global currentScene
+    currentScene = new_scene
+
+
+def set_all_scenes(scenes):
+    global gameScenes
+    gameScenes = scenes
+
+
+class TitleScreen:
     def __init__(self, surface):
         self.surface = surface
 
         self.background = Node(self.surface, [320, 180], [0, 0], z_index=0)
         self.title = Node(self.surface, [320, 180], [0, 0], z_index=1)
         self.startButton = Node(self.surface, [320, 180], [0, 0], z_index=0,
-                                action=[lambda: GameScreenManager.set_screen(self, GameScreenManager.gameScreens["gameScreen"]),
-                                        lambda: GameScreenManager.get_screen(self),
+                                action=[lambda: set_scene(gameScenes["gameScreen"]),
+                                        get_scene,
                                         type(self).__name__])
 
         self.startButton.clickable = True
@@ -41,7 +49,7 @@ class TitleScreen(GameScreenManager):
         self.startButton.draw(with_texture=True)
 
 
-class GameScreen(GameScreenManager):
+class GameScreen:
     def __init__(self, surface):
         self.number = 10
         self.surface = surface

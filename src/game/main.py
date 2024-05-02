@@ -2,7 +2,7 @@ import pygame as pg
 import sys
 
 from widgets import Node
-from game_states import GameScreenManager, TitleScreen, GameScreen
+from game_states import set_scene, get_scene, set_all_scenes, TitleScreen, GameScreen
 
 pg.init()
 
@@ -18,9 +18,8 @@ FPS = 20
 
 titleScreen = TitleScreen(surface)
 gameScreen = GameScreen(surface)
-gameScreenManager = GameScreenManager()
-GameScreenManager.gameScreens = {"titleScreen": titleScreen, "gameScreen": gameScreen}
-GameScreenManager.currentScreen = titleScreen
+set_all_scenes({"titleScreen": titleScreen, "gameScreen": gameScreen})
+set_scene(titleScreen)
 
 
 running = True
@@ -44,7 +43,7 @@ while running:
                 if button[0].on_click(mousePos):
                     break
 
-    gameScreenManager.get_screen().draw()
+    get_scene().draw()
 
     pg.display.flip()
 
