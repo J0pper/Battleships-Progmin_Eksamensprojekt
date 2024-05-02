@@ -22,11 +22,9 @@ def set_all_scenes(scenes):
 
 class TitleScreen:
     def __init__(self, surface):
-        self.surface = surface
-
-        self.background = Node(self.surface, [320, 180], [0, 0], z_index=0)
-        self.title = Node(self.surface, [320, 180], [0, 0], z_index=1)
-        self.startButton = Node(self.surface, [320, 180], [0, 0], z_index=0,
+        self.background = Node(surface, [320, 180], [0, 0], z_index=0)
+        self.title = Node(surface, [320, 180], [0, 0], z_index=1)
+        self.startButton = Node(surface, [320, 180], [0, 0], z_index=0,
                                 action=[lambda: set_scene(gameScenes["gameScreen"]),
                                         get_scene,
                                         self])
@@ -51,9 +49,6 @@ class TitleScreen:
 
 class GameScreen:
     def __init__(self, surface):
-        self.number = 10
-        self.surface = surface
-
         self.test = Node(surface, [320, 180], [200, 0], z_index=0)
         self.test.set_texture("../../textures/test/Marck_SUCK.png")
 
