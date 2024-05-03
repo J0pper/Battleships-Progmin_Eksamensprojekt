@@ -26,13 +26,16 @@ class Dims:
         self.color: list = color
         self.corner_radius: int = corner_radius
 
+        self.buttonRect = pg.Rect(*self.pos, *self.size)
+
     def draw(self):
-        pg.draw.rect(self.surface, self.color, [*self.pos, *self.size])
+        self.buttonRect = pg.Rect(*self.pos, *self.size)
+        pg.draw.rect(self.surface, self.color, self.buttonRect)
 
 
 class TexturedDims(Dims):
-    def __init__(self, surface):
-        super().__init__(surface)
+    def __init__(self, surface, pos=None):
+        super().__init__(surface, pos)
 
         self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png").convert()
         self.buttonTexture = self.defaultTexture
@@ -61,6 +64,24 @@ class TexturedDims(Dims):
             self.size = list(self.buttonTexture.get_size())
 
 
+class ButtonDims(TexturedDims):
+    def __init__(self, surface, action=None):
+        super().__init__(surface)
+
+        self.clickable = True
+        self.action = action
+
+    def on_click(self, mouse_pos) -> bool:
+        if not self.clickable:
+            return False
+        if not self.buttonRect.collidepoint(mouse_pos):
+            return False
+        if self.action[1]() != self.action[2]:
+            return False
+
+        self.action[0]()
+        return True
+
 
 class Node:
     registry = []
@@ -87,7 +108,7 @@ class Node:
 
         self.buttonRect = pg.Rect(*self.pos, *self.size)
 
-        self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png")
+        self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png").convert()
         self.buttonTexture = self.defaultTexture
         self.set_texture("../../textures/test/NO_TEXTURE.png", scale_by=self.size)
 

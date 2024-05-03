@@ -1,4 +1,4 @@
-from widgets import Node
+from widgets import Node, Dims, TexturedDims
 
 
 gameScenes: dict = {}
@@ -22,7 +22,7 @@ def set_all_scenes(scenes):
 
 class TitleScreen:
     def __init__(self, surface):
-        self.background = Node(surface, [320, 180], [0, 0], z_index=0)
+        self.background = TexturedDims(surface)
         self.title = Node(surface, [320, 180], [0, 0], z_index=1)
         self.startButton = Node(surface, [320, 180], [0, 0], z_index=0,
                                 action=[lambda: set_scene(gameScenes["gameScreen"]),
@@ -42,7 +42,7 @@ class TitleScreen:
                                      linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
 
     def draw(self):
-        self.background.draw(with_texture=True)
+        self.background.texture_draw()
         self.title.draw(with_texture=True)
         self.startButton.draw(with_texture=True)
 
