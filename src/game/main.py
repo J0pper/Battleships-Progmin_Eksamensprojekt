@@ -1,7 +1,7 @@
 import pygame as pg
 import sys
 
-from widgets import Node
+from widgets import Node, Dims, TexturedDims
 from game_states import set_scene, get_scene, set_all_scenes, TitleScreen, GameScreen
 
 pg.init()
@@ -14,18 +14,21 @@ pg.display.set_caption("Ships & Explosions")
 
 # SPEED/FPS
 clock = pg.time.Clock()
-FPS = 20
+FPS = 200
 
 titleScreen = TitleScreen(surface)
 gameScreen = GameScreen(surface)
 set_all_scenes({"titleScreen": titleScreen, "gameScreen": gameScreen})
 set_scene(titleScreen)
 
+nyDims = Dims(surface)
+nyTexturedDims = TexturedDims(surface)
+nyTexturedDims.set_texture("../../textures/test/Marck_SUCK.png")
 
 running = True
 while running:
-
     surface.fill((34, 34, 34))
+
     clock.tick(FPS)
 
     # Listen for key events to QUIT the game and close upgrading screen.
@@ -34,6 +37,14 @@ while running:
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 running = False
+            if event.key == pg.K_DOWN:
+                nyTexturedDims.pos[1] += 1
+            if event.key == pg.K_UP:
+                nyTexturedDims.pos[1] -= 1
+            if event.key == pg.K_RIGHT:
+                nyTexturedDims.pos[0] += 1
+            if event.key == pg.K_LEFT:
+                nyTexturedDims.pos[0] -= 1
         elif event.type == pg.QUIT:
             running = False
         elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
@@ -44,7 +55,8 @@ while running:
                     break
 
     get_scene().draw()
-
+    nyDims.draw()
+    nyTexturedDims.texture_draw()
     pg.display.flip()
 
 pg.quit()

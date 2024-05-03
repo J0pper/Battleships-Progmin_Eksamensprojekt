@@ -1,5 +1,66 @@
 import pygame as pg
 
+"""
+Node
+
+TexturedNode
+
+ButtonNode
+
+"""
+
+
+class Dims:
+    def __init__(self, surface, size: list = None, pos: list = None, color=None, corner_radius: int = 0):
+        self.surface = surface
+
+        # To get around the "Default argument value is mutable" warning:
+        if size is None:
+            size = [100, 100]
+        if pos is None:
+            pos = [0, 0]
+        if color is None:
+            color = [255, 255, 255]
+        self.size: list = size
+        self.pos: list = pos
+        self.color: list = color
+        self.corner_radius: int = corner_radius
+
+    def draw(self):
+        pg.draw.rect(self.surface, self.color, [*self.pos, *self.size])
+
+
+class TexturedDims(Dims):
+    def __init__(self, surface):
+        super().__init__(surface)
+
+        self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png").convert()
+        self.buttonTexture = self.defaultTexture
+        self.set_texture("../../textures/test/NO_TEXTURE.png", scale_by=self.size)
+
+    def texture_draw(self):
+        self.surface.blit(self.buttonTexture, self.pos)
+
+    def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None,
+                    prioritize_texture_size: bool = False):
+        self.buttonTexture = pg.image.load(texture_path).convert()
+
+        if scale_by is None:
+            scale_by = self.size
+        if not prioritize_texture_size:
+            self.buttonTexture = pg.transform.scale(self.buttonTexture, self.size)
+
+        if linear_scaling:
+            self.buttonTexture = pg.transform.scale_by(self.buttonTexture, scale_by)
+        else:
+            self.buttonTexture = pg.transform.scale(self.buttonTexture, scale_by)
+        self.size[0] = self.size[0] * scale_by if linear_scaling else scale_by[0]
+        self.size[1] = self.size[1] * scale_by if linear_scaling else scale_by[1]
+
+        if prioritize_texture_size:
+            self.size = list(self.buttonTexture.get_size())
+
+
 
 class Node:
     registry = []
