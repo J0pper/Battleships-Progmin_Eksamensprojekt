@@ -25,6 +25,8 @@ nyDims = Dims(surface)
 nyTexturedDims = TexturedDims(surface)
 nyTexturedDims.set_texture("../../textures/test/Marck_SUCK.png")
 
+vel = 1
+
 running = True
 while running:
     surface.fill((34, 34, 34))
@@ -37,14 +39,7 @@ while running:
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 running = False
-            if event.key == pg.K_DOWN:
-                nyTexturedDims.pos[1] += 1
-            if event.key == pg.K_UP:
-                nyTexturedDims.pos[1] -= 1
-            if event.key == pg.K_RIGHT:
-                nyTexturedDims.pos[0] += 1
-            if event.key == pg.K_LEFT:
-                nyTexturedDims.pos[0] -= 1
+
         elif event.type == pg.QUIT:
             running = False
         elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
@@ -53,6 +48,19 @@ while running:
             for button in zSortedButtons:
                 if button[0].on_click(mousePos):
                     break
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        nyTexturedDims.pos[0] -= vel
+
+    if keys[pygame.K_RIGHT]:
+        nyTexturedDims.pos[0] += vel
+
+    if keys[pygame.K_UP]:
+        nyTexturedDims.pos[1] -= vel
+
+    if keys[pygame.K_DOWN]:
+        nyTexturedDims.pos[1] += vel
 
     get_scene().draw()
     nyDims.draw()
