@@ -49,7 +49,6 @@ while running:
 
     get_scene().draw()
     nyTexturedDims.pos = pg.mouse.get_pos()
-    nyTexturedDims.texture_draw()
     pg.display.flip()
 
 pg.quit()

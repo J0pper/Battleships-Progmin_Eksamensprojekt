@@ -11,7 +11,7 @@ class Node(pg.sprite.Sprite):
         if pos is None:
             pos = [0, 0]
         if color is None:
-            color = [255, 255, 255]
+            color = [255, 0, 0]
 
         self.surface = surface
         self.size: list = size
@@ -19,16 +19,25 @@ class Node(pg.sprite.Sprite):
         self.color: list = color
         self.corner_radius: int = corner_radius
 
-        self.buttonRect = pg.Rect(*self.pos, *self.size)
-        self.image = self.buttonRect
-        self.rect = self.buttonRect
+        self.nodeRect = pg.Rect(*self.pos, *self.size)
+        self.image = pg.Surface(self.size)
+        self.image.fill(self.color)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
 
+    """
     def draw(self):
         self.update()
         pg.draw.rect(self.surface, self.color, self.buttonRect)
+    """
 
     def update(self):
-        self.buttonRect = pg.Rect(*self.pos, *self.size)
+        self.nodeRect = pg.Rect(*self.pos, *self.size)
+        self.rect.center = self.pos
+
+    def move(self, new_pos):
+        self.pos = new_pos
+        self.update()
 
 
 class TexturedNode(Node):
@@ -40,10 +49,12 @@ class TexturedNode(Node):
         self.buttonTexture = self.defaultTexture
         self.set_texture("../../textures/test/NO_TEXTURE.png", scale_by=self.size)
         self.image = self.buttonTexture
-        self.rect = self.defaultTexture.get_rect()
+        self.rect = self.buttonTexture.get_rect()
 
+    """
     def texture_draw(self):
         self.surface.blit(self.buttonTexture, self.pos)
+    """
 
     def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None,
                     prioritize_texture_size: bool = True):
@@ -83,21 +94,13 @@ class ButtonNode(TexturedNode):
     def on_click(self, mouse_pos) -> bool:
         if not self.clickable:
             return False
-        if not self.buttonRect.collidepoint(mouse_pos):
+        if not self.nodeRect.collidepoint(mouse_pos):
             return False
         if self.action[1]() != self.action[2]:
             return False
 
         self.action[0]()
         return True
-
-
-class SpriteClass(pg.sprite.Sprite):
-    def __init__(self):
-        pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load("../../textures/test/NO_TEXTURE.png")
-        self.rect = self.image.get_rect()
-        self.rect.center = (100, 100)
 
 
 """
