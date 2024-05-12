@@ -56,7 +56,7 @@ class GameScreen:
 
         self.gamScrSpriteGroup = pg.sprite.Group()
         board = self.make_board(self.gamScrSpriteGroup)
-        self.move_board(board, (500, 0))
+        self.move_board(board, (0, 0))
 
         """
         for i, tile in enumerate(board):
@@ -71,7 +71,7 @@ class GameScreen:
         self.gamScrSpriteGroup.draw(self.surface)
 
     def make_board(self, sprite_group, rows: int = 10, columns: int = 10,
-                   tile_size: tuple[int, int] = (25, 25), tile_spacing: tuple[int, int] = (50, 50)) -> list[dict]:
+                   tile_size: list[int, int] = (25, 25), tile_spacing: list[int, int] = (50, 50)) -> list[dict]:
         """
         [{
             "index": (),

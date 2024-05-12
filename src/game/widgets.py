@@ -2,7 +2,8 @@ import pygame as pg
 
 
 class Node(pg.sprite.Sprite):
-    def __init__(self, surface, size: list = None, pos: list = None, color=None, corner_radius: int = 0):
+    def __init__(self, surface, size: list[int, int] = None, pos: list[int, int] = None,
+                 color: list[int, int, int] = None, corner_radius: int = 0):
         pg.sprite.Sprite.__init__(self)
 
         # To get around the "Default argument value is mutable" warning:
@@ -14,9 +15,9 @@ class Node(pg.sprite.Sprite):
             color = [255, 0, 0]
 
         self.surface = surface
-        self.size: list = size
-        self.pos: list = pos
-        self.color: list = color
+        self.size: list[int, int] = size
+        self.pos: list[int, int] = pos
+        self.color: list[int, int, int] = color
         self.corner_radius: int = corner_radius
 
         self.nodeRect = pg.Rect(*self.pos, *self.size)
