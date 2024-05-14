@@ -6,6 +6,7 @@ from game_states import set_scene, get_scene, set_all_scenes, TitleScreen, GameS
 
 pg.init()
 
+
 # DISPLAY
 RES = pg.display.Info().current_w, pg.display.Info().current_h
 surface = pg.display.set_mode((RES[0]/2, RES[1]/2), pg.RESIZABLE)
@@ -16,15 +17,18 @@ pg.display.set_caption("Ships & Explosions")
 clock = pg.time.Clock()
 FPS = 200
 
+#  DEFINING SCREENS
 titleScreen = TitleScreen(surface)
 gameScreen = GameScreen(surface)
 set_all_scenes({"titleScreen": titleScreen, "gameScreen": gameScreen})
 set_scene(titleScreen)
 
+#  DEFINING TEXTURES (TEST)
 nyTexturedDims = TexturedNode(surface)
 nyTexturedDims.set_texture("../../textures/test/Marck_SUCK.png")
 
 
+#  GAME RUN
 running = True
 while running:
     surface.fill((34, 34, 34))
