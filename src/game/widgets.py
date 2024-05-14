@@ -54,7 +54,6 @@ class TexturedNode(Node):
 
     def update(self):
         self.rect.topleft = self.pos
-        print("tf", self.pos)
         self.image.fill((0, 0, 255))
         self.image = self.buttonTexture
         self.nodeRect = pg.Rect(*self.pos, *self.size)
@@ -82,13 +81,13 @@ class TexturedNode(Node):
 
 
 class ButtonNode(TexturedNode):
-    registry = []
+    registry: list[tuple] = []
 
     def __init__(self, surface, z_index: int = 0, action=None):
         super().__init__(surface=surface)
         pg.sprite.Sprite.__init__(self)
 
-        self.registry.append([self, z_index])
+        self.registry.append((self, z_index))
 
         self.clickable = True
         self.action = action

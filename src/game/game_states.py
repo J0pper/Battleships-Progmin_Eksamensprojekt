@@ -1,6 +1,8 @@
 import pygame as pg
 from widgets import Node, TexturedNode, ButtonNode
+from objects import Tile
 import os
+import math
 
 
 gameScenes: dict = {}
@@ -53,8 +55,8 @@ class GameScreen:
         self.surface = surface
 
         self.gamScrSpriteGroup = pg.sprite.Group()
-        board = self.make_board(self.gamScrSpriteGroup)
-        self.move_board(board, (0, 0))
+        self.board = self.make_board(self.gamScrSpriteGroup)
+        self.move_board(self.board, (0, 0))
 
         self.ships = self.generate_ships("../../textures/boats")
 
@@ -64,10 +66,10 @@ class GameScreen:
 
         for ship in self.ships:
             if ship.hover:
-                ship.move_ship()
+                ship.move_ship(ship.follow_cursor())
 
     def make_board(self, sprite_group, rows: int = 10, columns: int = 10,
-                   tile_size: tuple[int, int] = (25, 25), tile_spacing: tuple[int, int] = (50, 50)) -> list[dict]:
+                   tile_size: tuple[int, int] = (25, 25), tile_spacing: tuple[int, int] = (50, 50)) -> list[Tile]:
         """
         [{
             "index": (),
@@ -84,18 +86,13 @@ class GameScreen:
         :return: A board-structure with all information for each tile.
         """
 
-        board: list[dict] = [{}]
+        board: list[Tile] = []
         for row in range(rows):
             for column in range(columns):
-                sprite = Node(self.surface, tile_size,(column * tile_spacing[0], row * tile_spacing[1]))
-                square: dict = {
-                    "index": (column, row),
-                    "rect_object": sprite,
-                    "ship_state": "unoccupied",
-                    "hit_state": None
-                }
+                sprite = Node(self.surface, tile_size, (column * tile_spacing[0], row * tile_spacing[1]))
+                tile: Tile = Tile((column, row), sprite)
                 sprite_group.add(sprite)
-                board.append(square)
+                board.append(tile)
         return board
 
     def generate_ships(self, texture_directory):
@@ -103,22 +100,20 @@ class GameScreen:
         shipTextures: list = os.listdir(texture_directory)
         for i in range(len(shipTextures)):
             ships.append(Ship(self.surface, f"{texture_directory}/{shipTextures[i]}",
-                              ((i * 100)+100, 150)))
+                              ((i * 100)+100, 150), self.board))
         return ships
 
-    def move_board(self, board: list[dict], offset: tuple):
+    def move_board(self, board: list[Tile], offset: tuple):
         for tile in board:
-            for key, value in tile.items():
-                if key != "rect_object":
-                    continue
-                pos = value.pos
-                value.move([pos[0] + offset[0], pos[1] + offset[1]])
+            sprite = tile.sprite
+            spritePos = sprite.pos
+            sprite.move([spritePos[0] + offset[0], spritePos[1] + offset[1]])
 
 
 class Ship:
     shipSpriteGroup = pg.sprite.Group()
 
-    def __init__(self, surface, texture_path, start_pos):
+    def __init__(self, surface, texture_path, start_pos, board):
         self.ship = ButtonNode(surface, z_index=1, action=lambda: self.toggle_hover())
         self.ship.set_texture(texture_path, linear_scaling=True, scale_by=3)
         self.ship.pos = start_pos
@@ -126,20 +121,48 @@ class Ship:
         self.shipSpriteGroup.add(self.ship)
         self.ship.update()
 
+        self.board = board
+
         self.offset = []
 
     def toggle_hover(self):
         if self.hover:
             self.hover = False
+            self.snap_ship(self.board)
         else:
             self.offset = (pg.mouse.get_pos()[0] - self.ship.pos[0], pg.mouse.get_pos()[1] - self.ship.pos[1])
             self.hover = True
 
-    def move_ship(self):
-        self.ship.pos = (pg.mouse.get_pos()[0] - self.offset[0], pg.mouse.get_pos()[1] - self.offset[1])
+    def move_ship(self, new_pos):
+        self.ship.pos = new_pos
         self.ship.update()
 
-    def snap_ship(self, ):
+    def follow_cursor(self) -> tuple[int, int]:
+        return pg.mouse.get_pos()[0] - self.offset[0], pg.mouse.get_pos()[1] - self.offset[1]
+
+    def snap_ship(self, board: list[Tile]):
+        targetTile = self.generate_distance_array(board)[0]
+        targetTilePos = 0
+        for tile in board:
+            if tile.index != targetTile[0]:
+                continue
+            targetTilePos = tile.sprite.pos
+            break
+        self.move_ship(targetTilePos)
+
+    def generate_distance_array(self, board: list[Tile]) -> list[tuple[tuple, float]]:
+        tileDistances: list[tuple[tuple, float]] = []
+
+        for tile in board:
+            tileDistances.append((tile.index, self.calc_tile_distance(tile.sprite.pos)))
+        sortedTileDistances = sorted(tileDistances, key=lambda distance: distance[1])
+        return sortedTileDistances
+
+    def calc_tile_distance(self, tile_pos: tuple[int, int]) -> float:
+        shipPos = self.ship.pos
+        return math.sqrt((shipPos[0] - tile_pos[0])**2 + (shipPos[1] - tile_pos[1])**2)
+
+    def calc_tile_from_distance(self):
         pass
 
     def get_pos(self):
