@@ -25,6 +25,7 @@ def set_all_scenes(scenes):
     gameScenes = scenes
 
 
+#  TITLE SCREEN CLASS
 class TitleScreen:
     def __init__(self, surface):
         self.surface = surface
@@ -50,6 +51,8 @@ class TitleScreen:
         self.titScrSpriteGroup.draw(self.surface)
 
 
+
+# GAMESCREEN CLASS
 class GameScreen:
     def __init__(self, surface):
         self.surface = surface
@@ -110,6 +113,7 @@ class GameScreen:
             sprite.move([spritePos[0] + offset[0], spritePos[1] + offset[1]])
 
 
+#  SHIP CLASS
 class Ship:
     shipSpriteGroup = pg.sprite.Group()
 

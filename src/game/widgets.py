@@ -98,6 +98,20 @@ class ButtonNode(TexturedNode):
             return False
         if not self.nodeRect.collidepoint(mouse_pos):
             return False
+        # TO DO ADD SOUND HERE
+        shipHit_sfx = pg.mixer.Sound("SHIP HIT.m4a")
+        youMissed_sfx = pg.mixer.Sound("YOU MISSED.m4a")
+        boom_sfx = pg.mixer.Sound("BOOM 1.m4a")
+        kaboom_sfx = pg.mixer.Sound("KABOOM.m4a")
+        wompWomp_sfx = pg.mixer.Sound("WOMPWOMP.m4a")
+        wow_sfx = pg.mixer.Sound("WOW.m4a")
+        yyo_sfx = pg.mixer.Sound("YARR YEBEE OVERBOARF.m4a")
+        weSinkin_sfx = pg.mixer.Sound("CAPTAIN WE SINKIN.m4a")
+
+
+
+
+
 
         self.action()
         return True
