@@ -21,7 +21,7 @@ class Node(pg.sprite.Sprite):
         self.withColor: bool = False
 
         self.image = pg.Surface(self.size)
-        # self.image.set_alpha(0)
+        self.image.set_alpha(0)
         self.nodeRect = pg.Rect(*self.pos, *self.size)
         self.rect = self.nodeRect
 
@@ -30,6 +30,7 @@ class Node(pg.sprite.Sprite):
         self.nodeRect.center = self.pos
         self.rect = self.nodeRect
         if self.withColor:
+            self.image.set_alpha(255)
             self.image.fill(self.color)
 
     def move(self, new_pos):
