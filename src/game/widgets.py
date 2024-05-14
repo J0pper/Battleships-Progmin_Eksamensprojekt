@@ -53,10 +53,10 @@ class TexturedNode(Node):
         self.rect = self.buttonTexture.get_rect()
 
     def update(self):
-        self.rect.topleft = self.pos
+        self.nodeRect.center = self.pos
+        self.rect = self.nodeRect
         self.image.fill((0, 0, 255))
         self.image = self.buttonTexture
-        self.nodeRect = pg.Rect(*self.pos, *self.size)
 
     def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None,
                     prioritize_texture_size: bool = True):
@@ -77,6 +77,7 @@ class TexturedNode(Node):
         if prioritize_texture_size:
             self.size = list(self.buttonTexture.get_size())
 
+        self.nodeRect.size = self.size
         self.update()
 
 

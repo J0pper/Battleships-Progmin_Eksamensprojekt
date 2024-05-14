@@ -134,7 +134,7 @@ class Ship:
             self.hover = True
 
     def move_ship(self, new_pos):
-        self.ship.pos = new_pos
+        self.ship.move(new_pos)
         self.ship.update()
 
     def follow_cursor(self) -> tuple[int, int]:
@@ -148,7 +148,7 @@ class Ship:
                 continue
             targetTilePos = tile.sprite.pos
             break
-        self.move_ship(targetTilePos)
+        self.move_ship(tuple(targetTilePos))
 
     def generate_distance_array(self, board: list[Tile]) -> list[tuple[tuple, float]]:
         tileDistances: list[tuple[tuple, float]] = []
