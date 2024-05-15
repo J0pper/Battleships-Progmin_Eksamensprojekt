@@ -23,7 +23,6 @@ class Node(pg.sprite.Sprite):
         self.nodeRect = pg.Rect(*self.pos, *self.size)
         self.image = pg.Surface(self.size)
         self.image.set_alpha(0)
-        self.nodeRect = pg.Rect(*self.pos, *self.size)
         self.rect = self.nodeRect
 
     def update(self):
