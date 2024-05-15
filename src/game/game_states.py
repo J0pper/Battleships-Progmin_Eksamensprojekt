@@ -55,9 +55,14 @@ class GameScreen:
     def __init__(self, surface):
         self.surface = surface
 
+        gameScreen_bg = TexturedNode(self.surface)
+        gameScreen_bg.set_texture("../../textures/elements/GUI_table.png")
+
         self.gamScrSpriteGroup = pg.sprite.Group()
+        self.gamScrSpriteGroup.add(gameScreen_bg)
         board = self.make_board(self.gamScrSpriteGroup)
         self.move_board(board, (0, 0))
+
 
         self.ships = self.generate_ships("../../textures/boats")
 
