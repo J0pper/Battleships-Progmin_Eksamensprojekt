@@ -18,23 +18,21 @@ class Node(pg.sprite.Sprite):
         self.pos: list[int] = list(pos)
         self.color: list[int] = list(color)
         self.corner_radius: int = corner_radius
+        self.withColor: bool = False
 
         self.nodeRect = pg.Rect(*self.pos, *self.size)
         self.image = pg.Surface(self.size)
-        self.image.fill(self.color)
-        self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-
-    """
-    def draw(self):
-        self.update()
-        pg.draw.rect(self.surface, self.color, self.buttonRect)
-    """
+        self.image.set_alpha(0)
+        self.nodeRect = pg.Rect(*self.pos, *self.size)
+        self.rect = self.nodeRect
 
     def update(self):
-        self.nodeRect = pg.Rect(*self.pos, *self.size)
-        self.rect.center = self.pos
-        self.image.fill(self.color)
+        self.nodeRect.size = self.size
+        self.nodeRect.center = self.pos
+        self.rect = self.nodeRect
+        if self.withColor:
+            self.image.set_alpha(255)
+            self.image.fill(self.color)
 
     def move(self, new_pos):
         self.pos = new_pos
@@ -49,15 +47,7 @@ class TexturedNode(Node):
         self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png")
         self.buttonTexture = self.defaultTexture
         self.set_texture("../../textures/test/NO_TEXTURE.png", scale_by=self.size)
-        self.image = self.buttonTexture
-        self.rect = self.buttonTexture.get_rect()
-
-    def update(self):
-        self.rect.topleft = self.pos
-        print("tf", self.pos)
-        self.image.fill((0, 0, 255))
-        self.image = self.buttonTexture
-        self.nodeRect = pg.Rect(*self.pos, *self.size)
+        self.update()
 
     def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None,
                     prioritize_texture_size: bool = True):
@@ -78,17 +68,18 @@ class TexturedNode(Node):
         if prioritize_texture_size:
             self.size = list(self.buttonTexture.get_size())
 
+        self.image = self.buttonTexture
         self.update()
 
 
 class ButtonNode(TexturedNode):
-    registry = []
+    registry: list[tuple] = []
 
     def __init__(self, surface, z_index: int = 0, action=None):
         super().__init__(surface=surface)
         pg.sprite.Sprite.__init__(self)
 
-        self.registry.append([self, z_index])
+        self.registry.append((self, z_index))
 
         self.clickable = True
         self.action = action
@@ -99,6 +90,7 @@ class ButtonNode(TexturedNode):
         if not self.nodeRect.collidepoint(mouse_pos):
             return False
         # TO DO ADD SOUND HERE
+        """
         shipHit_sfx = pg.mixer.Sound("../../audio/SHIP HIT.mp3")
         youMissed_sfx = pg.mixer.Sound("../../audio/YOU MISSED.mp3")
         splash_sfx = shipHit_sfx = pg.mixer.Sound("../../audio/SPLASH 1.mp3")
@@ -109,11 +101,7 @@ class ButtonNode(TexturedNode):
         yyo_sfx = pg.mixer.Sound("../../audio/YARR YEBEE OVERBOARF.mp3")
         weSinkin_sfx = pg.mixer.Sound("../../audio/CAPTAIN WE SINKIN.mp3")
         shipSunk_sfx = pg.mixer.Sound("../../audio/SHIP SUNK.mp3")
-
-
-
-
-
+        """
 
         self.action()
         return True
