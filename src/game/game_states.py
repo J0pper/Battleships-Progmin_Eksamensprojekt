@@ -68,7 +68,7 @@ class GameScreen:
         mid = (res[0] / 2, res[1] / 2)
 
         self.boardTexture = TexturedNode(self.surface)
-        self.boardTexture.set_texture("../../textures/elements/spillerpladeWgrid_you.png", linear_scaling=True,
+        self.boardTexture.set_texture("../../textures/elements/SPILLERPLADE_YOU_inner.png", linear_scaling=True,
                                       scale_by=scaleFactor[0], prioritize_texture_size=True)
         self.boardSpriteGroup.add(self.boardTexture)
 
@@ -111,7 +111,7 @@ class GameScreen:
                 sprite = Node(self.surface, (tile_size[0] * scale_factor[0], tile_size[1] * scale_factor[1]),
                               (column * tile_spacing[0] * scale_factor[0], row * tile_spacing[1] * scale_factor[1]))
                 tile: Tile = Tile((column, row), sprite)
-                sprite.withColor = False
+                sprite.withColor = True
                 sprite_group.add(sprite)
                 board.append(tile)
         return board

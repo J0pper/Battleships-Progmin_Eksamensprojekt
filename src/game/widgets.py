@@ -67,6 +67,7 @@ class TexturedNode(Node):
         if prioritize_texture_size:
             self.size = list(self.buttonTexture.get_size())
 
+        self.image = self.buttonTexture
         self.update()
 
 
@@ -88,6 +89,7 @@ class ButtonNode(TexturedNode):
         if not self.nodeRect.collidepoint(mouse_pos):
             return False
         # TO DO ADD SOUND HERE
+        """
         shipHit_sfx = pg.mixer.Sound("../../audio/SHIP HIT.m4a")
         youMissed_sfx = pg.mixer.Sound("../../audio/YOU MISSED.m4a")
         boom_sfx = pg.mixer.Sound("../../audio/BOOM 1.m4a")
@@ -96,6 +98,7 @@ class ButtonNode(TexturedNode):
         wow_sfx = pg.mixer.Sound("../../audio/WOW.m4a")
         yyo_sfx = pg.mixer.Sound("../../audio/YARR YEBEE OVERBOARF.m4a")
         weSinkin_sfx = pg.mixer.Sound("../../audio/CAPTAIN WE SINKIN.m4a")
+        """
 
         self.action()
         return True
