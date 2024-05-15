@@ -1,6 +1,6 @@
 import pygame as pg
 from widgets import Node, TexturedNode, ButtonNode
-from objects_and_utils import Tile
+from objects_and_utils import *
 import os
 import math
 
@@ -66,6 +66,8 @@ class GameScreen:
         res = self.surface.get_size()
         scaleFactor: tuple = (res[0] / 320, res[1] / 180)
         mid = (res[0] / 2, res[1] / 2)
+        quarterLeft = (res[0] * 6/20, res[1] / 2)
+        quarterRight = (res[0] * 14/20, res[1] / 2)
 
         guiRemaining = TexturedNode(self.surface)
         guiRemaining.set_texture("../../textures/elements/GUI_remaining106x35.png", True,
@@ -78,15 +80,22 @@ class GameScreen:
         gameScreen_bg.move(mid)
         guiRemaining.move(mid)
 
+        self.playerBoardTexture = TexturedNode(self.surface)
+        self.playerBoardTexture.set_texture("../../textures/elements/spillerpladeWgrid_you.png", linear_scaling=True,
+                                            scale_by=scaleFactor[0])
 
+        self.enemyBoardTexture = TexturedNode(self.surface)
+        self.enemyBoardTexture.set_texture("../../textures/elements/spillerpladeWgrid_enemy.png", linear_scaling=True,
+                                           scale_by=scaleFactor[0])
 
-        self.boardTexture = TexturedNode(self.surface)
-        self.boardTexture.set_texture("../../textures/elements/spillerpladeWgrid_you.png", linear_scaling=True,
-                                      scale_by=scaleFactor[0], prioritize_texture_size=True)
-        self.boardSpriteGroup.add(self.boardTexture)
+        self.boardSpriteGroup.add(self.playerBoardTexture)
+        self.boardSpriteGroup.add(self.enemyBoardTexture)
 
-        self.boardTileGrid = self.make_board(self.boardSpriteGroup, scale_factor=scaleFactor)
-        self.move_board(self.boardTileGrid, self.boardTexture, mid)
+        self.playerBoardTileGrid = self.make_board(self.boardSpriteGroup, scale_factor=scaleFactor)
+        self.move_board(self.playerBoardTileGrid, self.playerBoardTexture, quarterLeft)
+
+        self.enemyBoardTileGrid = self.make_board(self.boardSpriteGroup, scale_factor=scaleFactor)
+        self.move_board(self.enemyBoardTileGrid, self.enemyBoardTexture, quarterRight)
 
         self.ships = self.generate_ships("../../textures/boats")
 
@@ -99,8 +108,8 @@ class GameScreen:
                 ship.move_ship(ship.follow_cursor())
 
     def make_board(self, sprite_group, rows: int = 10, columns: int = 10,
-                   tile_size: tuple[int, int] = (8, 8), tile_spacing: tuple[int, int] = (10, 10),
-                   border_offset = (4, 4), scale_factor: tuple = (1, 1)) -> list[Tile]:
+                   tile_size: tuple[int, int] = (10, 10), tile_spacing: tuple[int, int] = (10, 10),
+                   border_offset: tuple[int, int] = (4, 4), scale_factor: tuple = (1, 1)) -> list[Tile]:
         """
         [{
             "index": (),
@@ -115,6 +124,7 @@ class GameScreen:
         :param tile_size: Size of each tile in pixels.
         :param tile_spacing: Spacing between each tile.
         :param scale_factor: Scale the sizing of the tiles to fit the screen resolution.
+        :param border_offset:
         :return: A board-structure with all information for each tile.
         """
 
@@ -136,7 +146,7 @@ class GameScreen:
         shipTextures: list = os.listdir(texture_directory)
         for i in range(len(shipTextures)):
             ships.append(Ship(self.surface, f"{texture_directory}/{shipTextures[i]}",
-                              ((i * 100) + 100, 150), self.boardTileGrid))
+                              ((i * 100) + 100, 150), self.playerBoardTileGrid))
         return ships
 
     def move_board(self, board: list[Tile], board_texture: TexturedNode, new_pos: tuple[int, int]):
@@ -159,11 +169,11 @@ class Ship:
 
     def __init__(self, surface, texture_path, start_pos, board):
         res = surface.get_size()
-        scaleFactor = [res[0] / 320, res[1] / 180]
+        self.scaleFactor = [res[0] / 320, res[1] / 180]
         mid = (res[0] / 2, res[1] / 2)
 
         self.ship = ButtonNode(surface, z_index=1, action=lambda: self.toggle_hover())
-        self.ship.set_texture(texture_path, linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
+        self.ship.set_texture(texture_path, linear_scaling=True, scale_by=self.scaleFactor[0], prioritize_texture_size=True)
         self.ship.pos = start_pos
         self.hover = False
         self.shipSpriteGroup.add(self.ship)
@@ -190,12 +200,14 @@ class Ship:
 
     def snap_ship(self, board: list[Tile]):
         targetTile = self.generate_distance_array(board)[0]
-        targetTilePos = 0
+        targetTilePos = []
         for tile in board:
             if tile.index != targetTile[0]:
                 continue
             targetTilePos = tile.sprite.pos
             break
+        if not first_n_digits(max(*self.ship.size) / self.scaleFactor[0], 1) % 2:
+            targetTilePos = (targetTilePos[0], targetTilePos[1] + board[0].sprite.size[0] / 2)
         self.move_ship(tuple(targetTilePos))
 
     def generate_distance_array(self, board: list[Tile]) -> list[tuple[tuple, float]]:

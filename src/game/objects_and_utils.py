@@ -1,3 +1,6 @@
+import math
+
+
 class Tile:
     def __init__(self, index: tuple[int, int], sprite):
         self.index: tuple[int, int] = index
@@ -23,3 +26,9 @@ class Vec:
 
     def __str__(self):
         return f"x: ({self.x}, y: {self.y})"
+
+
+def first_n_digits(num, n):
+    return num // 10 ** (int(math.log(num, 10)) - n + 1)
+
+

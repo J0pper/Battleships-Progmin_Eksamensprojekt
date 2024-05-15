@@ -9,7 +9,7 @@ pg.init()
 
 # DISPLAY
 RES = pg.display.Info().current_w, pg.display.Info().current_h
-surface = pg.display.set_mode((RES[0], RES[1]), pg.RESIZABLE)
+surface = pg.display.set_mode((RES[0] / 2, RES[1] / 2), pg.RESIZABLE)
 print(RES)
 pg.display.set_caption("Ships & Explosions")
 # surface = pg.display.set_mode((0, 0), pg.FULLSCREEN)
