@@ -1,6 +1,6 @@
 import pygame as pg
 from widgets import Node, TexturedNode, ButtonNode
-from objects import Tile
+from objects_and_utils import Tile
 import os
 import math
 
@@ -67,13 +67,12 @@ class GameScreen:
         gameScreen_bg.set_texture("../../textures/elements/GUI_table.png")
         self.boardSpriteGroup.add(gameScreen_bg)
 
-
         res = self.surface.get_size()
         scaleFactor: tuple = (res[0] / 320, res[1] / 180)
         mid = (res[0] / 2, res[1] / 2)
 
         self.boardTexture = TexturedNode(self.surface)
-        self.boardTexture.set_texture("../../textures/elements/SPILLERPLADE_YOU_inner.png", linear_scaling=True,
+        self.boardTexture.set_texture("../../textures/elements/spillerpladeWgrid_you.png", linear_scaling=True,
                                       scale_by=scaleFactor[0], prioritize_texture_size=True)
         self.boardSpriteGroup.add(self.boardTexture)
 
@@ -91,8 +90,8 @@ class GameScreen:
                 ship.move_ship(ship.follow_cursor())
 
     def make_board(self, sprite_group, rows: int = 10, columns: int = 10,
-                   tile_size: tuple[int, int] = (10, 10), tile_spacing: tuple[int, int] = (12, 12),
-                   scale_factor: tuple = (1, 1)) -> list[Tile]:
+                   tile_size: tuple[int, int] = (8, 8), tile_spacing: tuple[int, int] = (10, 10),
+                   border_offset = (4, 4), scale_factor: tuple = (1, 1)) -> list[Tile]:
         """
         [{
             "index": (),
@@ -114,9 +113,11 @@ class GameScreen:
         for row in range(rows):
             for column in range(columns):
                 sprite = Node(self.surface, (tile_size[0] * scale_factor[0], tile_size[1] * scale_factor[1]),
-                              (column * tile_spacing[0] * scale_factor[0], row * tile_spacing[1] * scale_factor[1]))
+                              ((column * tile_spacing[0] + border_offset[0]) * scale_factor[0],
+                               (row * tile_spacing[1] + border_offset[1]) * scale_factor[1]))
                 tile: Tile = Tile((column, row), sprite)
-                sprite.withColor = True
+                sprite.withColor = False
+
                 sprite_group.add(sprite)
                 board.append(tile)
         return board
