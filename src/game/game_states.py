@@ -63,14 +63,22 @@ class GameScreen:
 
         self.boardSpriteGroup = pg.sprite.Group()
 
-        gameScreen_bg = TexturedNode(self.surface)
-        gameScreen_bg.set_texture("../../textures/elements/GUI_table.png")
-        self.boardSpriteGroup.add(gameScreen_bg)
-
-
         res = self.surface.get_size()
         scaleFactor: tuple = (res[0] / 320, res[1] / 180)
         mid = (res[0] / 2, res[1] / 2)
+
+        guiRemaining = TexturedNode(self.surface)
+        guiRemaining.set_texture("../../textures/elements/GUI_remaining106x35.png", True,
+                                 scale_by=scaleFactor[0], prioritize_texture_size=False)
+
+        gameScreen_bg = TexturedNode(self.surface)
+        gameScreen_bg.set_texture("../../textures/elements/GUI_table.png", True,
+                                  scale_by=scaleFactor[0], prioritize_texture_size=True)
+        self.boardSpriteGroup.add(gameScreen_bg)
+        gameScreen_bg.move(mid)
+        guiRemaining.move(mid)
+
+
 
         self.boardTexture = TexturedNode(self.surface)
         self.boardTexture.set_texture("../../textures/elements/SPILLERPLADE_YOU_inner.png", linear_scaling=True,
