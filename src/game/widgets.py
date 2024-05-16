@@ -1,3 +1,5 @@
+import math
+
 import pygame as pg
 
 
@@ -50,13 +52,15 @@ class Node(pg.sprite.Sprite):
             self.surface.blit(self.textSurface, self.nodeRect.center)
 
     def rotate_rect(self):
-        pass
+        self.size = [self.size[1], self.size[0]]
 
 
 class TexturedNode(Node):
     def __init__(self, surface):
         super().__init__(surface=surface)
         pg.sprite.Sprite.__init__(self)
+
+        self.angle = 0
 
         self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png")
         self.buttonTexture = self.defaultTexture
@@ -86,7 +90,11 @@ class TexturedNode(Node):
         self.update()
 
     def rotate_image(self):
-        self.image = pg.transform.rotate(self.buttonTexture, 90)
+        self.angle += 90
+        if self.angle > 270:
+            self.angle = 0
+        self.image = pg.transform.rotate(self.buttonTexture, -self.angle)
+        self.rotate_rect()
 
 
 class ButtonNode(TexturedNode):

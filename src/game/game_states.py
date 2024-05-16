@@ -80,6 +80,7 @@ class ConnectionScreen:
         self.surface.fill((34, 34, 34))
         self.conScrSpriteGroup.draw(self.surface)
 
+
 # GAME SCREEN CLASS
 class GameScreen:
     def __init__(self, surface):
@@ -214,6 +215,8 @@ class Ship:
         else:
             self.offset = (pg.mouse.get_pos()[0] - self.ship.pos[0], pg.mouse.get_pos()[1] - self.ship.pos[1])
             self.hover = True
+            self.ship.rotate_image()
+            self.ship.update()
 
     def move_ship(self, new_pos):
         self.ship.move(new_pos)
