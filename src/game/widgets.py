@@ -37,6 +37,10 @@ class Node(pg.sprite.Sprite):
         self.pos = new_pos
         self.update()
 
+    def rotate_rectOnCenter(self):
+        self.size = (self.size[1], self.size[0])
+        self.update()
+
 
 class TexturedNode(Node):
     def __init__(self, surface):
@@ -67,6 +71,11 @@ class TexturedNode(Node):
         if prioritize_texture_size:
             self.size = list(self.buttonTexture.get_size())
 
+        self.image = self.buttonTexture
+        self.update()
+
+    def rotate_img(self):
+        pg.transform.rotate(self.buttonTexture, 90)
         self.image = self.buttonTexture
         self.update()
 

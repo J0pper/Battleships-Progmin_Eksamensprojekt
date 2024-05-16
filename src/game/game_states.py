@@ -104,8 +104,19 @@ class GameScreen:
         Ship.shipSpriteGroup.draw(self.surface)
 
         for ship in self.ships:
+            ship.ship.rotate_img()
             if ship.hover:
                 ship.move_ship(ship.follow_cursor())
+
+                if pg.key.get_pressed()[pg.K_r]:
+                    if ship.allowRotate:
+                        ship.allowRotate = False
+                        print("your mom")
+                        print(ship.ship.size)
+                        ship.ship.rotate_img()
+                        print(ship.ship.size)
+                else:
+                    ship.allowRotate = True
 
     def make_board(self, sprite_group, rows: int = 10, columns: int = 10,
                    tile_size: tuple[int, int] = (10, 10), tile_spacing: tuple[int, int] = (10, 10),
@@ -182,6 +193,8 @@ class Ship:
         self.board = board
 
         self.offset = []
+
+        self.allowRotate: bool = True
 
     def toggle_hover(self):
         if self.hover:
