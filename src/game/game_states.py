@@ -226,10 +226,6 @@ class Ship:
                 self.hover = False
                 Ship.shipMoving = False
                 self.update_tile_occupancy()
-                for tile in self.board:
-                    if tile.shipState == "occupied":
-                        print(tile.index)
-                print("")
             return
         if Ship.shipMoving:
             return
