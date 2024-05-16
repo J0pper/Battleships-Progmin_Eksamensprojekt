@@ -52,9 +52,8 @@ class Node(pg.sprite.Sprite):
             self.surface.blit(self.textSurface, self.nodeRect.center)
 
     def rotate_rect(self):
-        self.size = [self.size[1], self.size[0]]
+        self.size = self.size[::-1]
         self.update()
-
 
 class TexturedNode(Node):
     def __init__(self, surface):
