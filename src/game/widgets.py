@@ -1,5 +1,3 @@
-import math
-
 import pygame as pg
 
 
@@ -55,17 +53,19 @@ class Node(pg.sprite.Sprite):
         self.size = self.size[::-1]
         self.update()
 
+
 class TexturedNode(Node):
-    def __init__(self, surface):
+    def __init__(self, surface, default_texture: bool = True):
         super().__init__(surface=surface)
         pg.sprite.Sprite.__init__(self)
 
         self.angle = 0
 
-        self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png")
-        self.buttonTexture = self.defaultTexture
-        self.set_texture("../../textures/test/NO_TEXTURE.png", scale_by=self.size)
-        self.update()
+        if default_texture:
+            self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png")
+            self.buttonTexture = self.defaultTexture
+            self.set_texture("../../textures/test/NO_TEXTURE.png", scale_by=self.size)
+            self.update()
 
     def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None,
                     prioritize_texture_size: bool = True):
@@ -100,8 +100,8 @@ class TexturedNode(Node):
 class ButtonNode(TexturedNode):
     registry: list[tuple] = []
 
-    def __init__(self, surface, z_index: int = 0, action=None):
-        super().__init__(surface=surface)
+    def __init__(self, surface, z_index: int = 0, action=None, default_texture: bool = True):
+        super().__init__(surface=surface, default_texture=default_texture)
         pg.sprite.Sprite.__init__(self)
 
         self.registry.append((self, z_index))
