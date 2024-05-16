@@ -53,6 +53,7 @@ class Node(pg.sprite.Sprite):
 
     def rotate_rect(self):
         self.size = [self.size[1], self.size[0]]
+        self.update()
 
 
 class TexturedNode(Node):
