@@ -1,8 +1,8 @@
 import pygame as pg
 import sys
 
-from widgets import Node, TexturedNode, ButtonNode
-from game_states import set_scene, get_scene, set_all_scenes, TitleScreen, GameScreen
+from widgets import *
+from game_states import *
 
 pg.init()
 pg.font.init()
@@ -20,8 +20,9 @@ FPS = 200
 
 #  DEFINING SCREENS
 titleScreen = TitleScreen(surface)
+connectionScreen = ConnectionScreen(surface)
 gameScreen = GameScreen(surface)
-set_all_scenes({"titleScreen": titleScreen, "gameScreen": gameScreen})
+set_all_scenes({"titleScreen": titleScreen, "connectionScreen": connectionScreen, "gameScreen": gameScreen})
 set_scene(titleScreen)
 
 #  DEFINING TEXTURES (TEST)

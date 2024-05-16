@@ -32,7 +32,7 @@ class TitleScreen:
 
         background = TexturedNode(self.surface)
         title = TexturedNode(self.surface)
-        startButton = ButtonNode(self.surface, action=lambda: set_scene(gameScenes["gameScreen"]))
+        startButton = ButtonNode(self.surface, action=lambda: set_scene(gameScenes["connectionScreen"]))
 
         res = self.surface.get_size()
         scaleFactor = [res[0] / 320, res[1] / 180]
@@ -59,6 +59,26 @@ class TitleScreen:
         self.titScrSpriteGroup.draw(self.surface)
         self.ipText.draw_text()
 
+
+class ConnectionScreen:
+    def __init__(self, surface):
+        self.surface = surface
+
+        self.conScrSpriteGroup = pg.sprite.Group()
+
+        res = self.surface.get_size()
+        scaleFactor = [res[0] / 320, res[1] / 180]
+        mid = (res[0] / 2, res[1] / 2)
+
+        startButton = ButtonNode(self.surface, action=lambda: set_scene(gameScenes["gameScreen"]))
+        startButton.set_texture("../../textures/title_screen/NORMAL_Start.png",
+                                linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
+
+        self.conScrSpriteGroup.add(startButton)
+
+    def draw(self):
+        self.surface.fill((34, 34, 34))
+        self.conScrSpriteGroup.draw(self.surface)
 
 # GAME SCREEN CLASS
 class GameScreen:

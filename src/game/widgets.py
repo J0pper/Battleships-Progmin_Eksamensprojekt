@@ -49,6 +49,9 @@ class Node(pg.sprite.Sprite):
         if self.withText:
             self.surface.blit(self.textSurface, self.nodeRect.center)
 
+    def rotate_rect(self):
+        pass
+
 
 class TexturedNode(Node):
     def __init__(self, surface):
@@ -81,6 +84,9 @@ class TexturedNode(Node):
 
         self.image = self.buttonTexture
         self.update()
+
+    def rotate_image(self):
+        self.image = pg.transform.rotate(self.buttonTexture, 90)
 
 
 class ButtonNode(TexturedNode):
