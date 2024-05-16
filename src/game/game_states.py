@@ -52,8 +52,12 @@ class TitleScreen:
         self.titScrSpriteGroup = pg.sprite.Group()
         self.titScrSpriteGroup.add(background, title, startButton)
 
+        self.ipText = Node(self.surface, pos=(100, 100), text="hello")
+        print(self.ipText.withText)
+
     def draw(self):
         self.titScrSpriteGroup.draw(self.surface)
+        self.ipText.draw_text()
 
 
 # GAME SCREEN CLASS

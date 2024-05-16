@@ -3,7 +3,7 @@ import pygame as pg
 
 class Node(pg.sprite.Sprite):
     def __init__(self, surface, size: tuple[int, int] = None, pos: tuple[int, int] = None,
-                 color: tuple[int, int, int] = None, corner_radius: int = 0):
+                 color: tuple[int, int, int] = None, corner_radius: int = 0, text: str = None):
         pg.sprite.Sprite.__init__(self)
         self.surface = surface
 
@@ -13,11 +13,19 @@ class Node(pg.sprite.Sprite):
             pos = (0, 0)
         if color is None:
             color = (0, 255, 0)
+        if text is None:
+            text = "No text."
+            self.withText: bool = False
+        else:
+            self.withText = True
 
         self.size: list[int] = list(size)
         self.pos: list[int] = list(pos)
         self.color: list[int] = list(color)
         self.corner_radius: int = corner_radius
+        self.text = text
+        self.font = pg.font.SysFont('Arial', 30)
+        self.textSurface = self.font.render(text, 1, (255, 255, 255))
         self.withColor: bool = False
 
         self.nodeRect = pg.Rect(*self.pos, *self.size)
@@ -36,6 +44,10 @@ class Node(pg.sprite.Sprite):
     def move(self, new_pos):
         self.pos = new_pos
         self.update()
+
+    def draw_text(self):
+        if self.withText:
+            self.surface.blit(self.textSurface, self.nodeRect.center)
 
 
 class TexturedNode(Node):
