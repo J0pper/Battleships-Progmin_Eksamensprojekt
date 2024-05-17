@@ -37,12 +37,17 @@ class Node(pg.sprite.Sprite):
         self.nodeRect.size = self.size
         self.nodeRect.center = self.pos
         self.rect = self.nodeRect
+        self.image = pg.transform.scale(self.image, self.size)
         if self.withColor:
             self.image.set_alpha(255)
             self.image.fill(self.color)
 
     def move(self, new_pos):
         self.pos = new_pos
+        self.update()
+
+    def re_size(self, new_size):
+        self.size = new_size
         self.update()
 
     def draw_text(self):
@@ -56,8 +61,8 @@ class Node(pg.sprite.Sprite):
 
 class TexturedNode(Node):
     def __init__(self, surface, default_texture: bool = True):
-        super().__init__(surface=surface)
         pg.sprite.Sprite.__init__(self)
+        super().__init__(surface=surface)
 
         self.angle = 0
 
@@ -99,10 +104,11 @@ class TexturedNode(Node):
 
 class ButtonNode(TexturedNode):
     registry: list[tuple] = []
+    lastClicked = [0]
 
     def __init__(self, surface, z_index: int = 0, action=None, default_texture: bool = True):
-        super().__init__(surface=surface, default_texture=default_texture)
         pg.sprite.Sprite.__init__(self)
+        super().__init__(surface=surface, default_texture=default_texture)
 
         self.registry.append((self, z_index))
 
@@ -127,6 +133,6 @@ class ButtonNode(TexturedNode):
         weSinkin_sfx = pg.mixer.Sound("../../audio/CAPTAIN WE SINKIN.mp3")
         shipSunk_sfx = pg.mixer.Sound("../../audio/SHIP SUNK.mp3")
         """
-
+        self.lastClicked[0] = self
         self.action()
         return True
