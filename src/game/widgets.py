@@ -134,5 +134,4 @@ class ButtonNode(TexturedNode):
         shipSunk_sfx = pg.mixer.Sound("../../audio/SHIP SUNK.mp3")
         """
         self.lastClicked[0] = self
-        self.action()
-        return True
+        return self.action()

@@ -1,12 +1,23 @@
+import os
+import sys
+from _thread import *
+
 import pygame as pg
+import pickle
+
 from widgets import Node, TexturedNode, ButtonNode
 from objects_and_utils import *
-import os
 from board import Board
+import socket
+
+from networking2.network import Network
 
 
 gameScenes: dict = {}
 currentScene = None
+
+network = None
+playerNumber= None
 
 
 def get_scene():
@@ -16,8 +27,7 @@ def get_scene():
 
 def set_scene(new_scene):
     global currentScene
-    if currentScene is not new_scene:
-        currentScene = new_scene
+    currentScene = new_scene
 
 
 def set_all_scenes(scenes):
@@ -27,8 +37,9 @@ def set_all_scenes(scenes):
 
 def button_validater(from_scene, action):
     if gameScenes[from_scene] != currentScene:
-        return
+        return False
     action()
+    return True
 
 
 #  TITLE SCREEN CLASS
@@ -40,7 +51,7 @@ class TitleScreen:
         title = TexturedNode(self.surface)
         startButton = ButtonNode(self.surface,
                                  action=lambda: button_validater("titleScreen",
-                                                                 lambda: set_scene(gameScenes["connectionScreen"])))
+                                                                 lambda: set_scene(gameScenes["connectScreen"])))
 
         res = self.surface.get_size()
         scaleFactor = [res[0] / 320, res[1] / 180]
@@ -51,7 +62,7 @@ class TitleScreen:
         title.set_texture("../../textures/title_screen/title.png", linear_scaling=True,
                           scale_by=scaleFactor[0],  prioritize_texture_size=True)
         startButton.set_texture("../../textures/title_screen/NORMAL_Start.png",
-                                linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
+                               linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
 
         background.move(mid)
         title.move(mid)
@@ -64,30 +75,46 @@ class TitleScreen:
         self.titScrSpriteGroup.draw(self.surface)
 
 
-class ConnectionScreen:
+class ConnectScreen:
     def __init__(self, surface):
+        self.firstRun = True
+
         self.surface = surface
 
         self.conScrSpriteGroup = pg.sprite.Group()
 
         res = self.surface.get_size()
-        scaleFactor = [res[0] / 320, res[1] / 180]
-
+        scaleFactor = (res[0] / 320, res[1] / 180)
+        mid = (res[0] / 2, res[1] / 2)
         startButton = ButtonNode(self.surface,
-                                 action=lambda: button_validater("connectionScreen",
+                                 action=lambda: button_validater("connectScreen",
                                                                  lambda: set_scene(gameScenes["gameScreen"])))
         startButton.set_texture("../../textures/title_screen/NORMAL_Start.png",
                                 linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
+        startButton.move((mid[0], mid[1]*1.5))
 
         self.conScrSpriteGroup.add(startButton)
 
-        self.ipText = Node(self.surface, pos=(100, 100), text="hello")
-        print(self.ipText.withText)
+        ipAddress = socket.gethostbyname(socket.gethostname())
+
+        titleText = Node(self.surface, pos=(100, 40), text="Waiting for players...")
+        ipText1 = Node(self.surface, pos=(100, 80), text="Your local IP-address is:")
+        ipText2 = Node(self.surface, pos=(100, 110), text=f"{ipAddress}")
+        bottomText = Node(self.surface, pos=(100, 140), text="Share it with your friend to play!")
+        self.text: list[Node] = [titleText, ipText1, ipText2, bottomText]
 
     def draw(self):
         self.surface.fill((34, 34, 34))
         self.conScrSpriteGroup.draw(self.surface)
-        self.ipText.draw_text()
+        for text in self.text:
+            text.draw_text()
+
+        if self.firstRun:
+            global network, playerNumber
+            network = Network()
+            playerNumber = int(network.get_connection_message())
+            print(playerNumber)
+            self.firstRun = False
 
 
 # GAME SCREEN CLASS
@@ -110,6 +137,7 @@ class GameScreen:
                                  leftBoardPos, scaleFactor)
         self.enemyBoard = Board(self.surface, "../../textures/elements/spillerpladeWgrid_enemy.png",
                                 rightBoardPos, scaleFactor, tile_click_action=lambda: self.attempt_strike())
+        self.boardManager = None
 
         # CREATE GAME SCREEN NODES.
         gameScreenBG = TexturedNode(self.surface)
@@ -137,8 +165,14 @@ class GameScreen:
         self.missPins = []
 
     def draw(self):
-        # self.playerSpriteGroup.draw(self.surface)
-        # self.enemySpriteGroup.draw(self.surface)
+        try:
+            self.boardManager = self.network.send("get")
+            self.network.send(pickle.dumps(self.enemyBoard))
+        except:
+            print("Couldn't get board manager")
+            pg.quit()
+            sys.exit()
+
         self.otherSprites.draw(self.surface)
         self.playerBoard.get_board_sprite_group().draw(self.surface)
         self.enemyBoard.get_board_sprite_group().draw(self.surface)

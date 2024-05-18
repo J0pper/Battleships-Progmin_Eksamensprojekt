@@ -1,4 +1,5 @@
 import socket
+import pickle
 
 
 class Network:
@@ -7,12 +8,12 @@ class Network:
         # self.server = socket.gethostbyname(socket.gethostname())  # Grabs your local IPv4 address.
         self.server = input("Server IP-address here: ")
         self.port = int(input("Port here: "))  # Specify a free port on your internet connection.
-        self.id: str = self.connect_server()  # Connects the client socket with the server.
+        self.connectMessage: str = self.connect_server()  # Connects the client socket with the server.
 
     # Passer function.
     # Might be useful, might need to be deleted.
-    def get_pos(self):
-        return self.id
+    def get_connection_message(self):
+        return self.connectMessage
 
     def connect_server(self) -> str:
         """
@@ -25,8 +26,13 @@ class Network:
         :return: Returns the initially send message as a string.
         """
         try:
+            print("hello")
             self.client.connect((self.server, self.port))  # Connect to server.
-            return self.client.recv(2048).decode()  # Receive and return reply-message as string.
+            print("hello2")
+            message = self.client.recv(2048).decode()  # Receive and return reply-message as string.
+            print("hello3")
+            print(message)
+            return message
         except socket.error as e:
             print("connect_server failed", e)  # Error-handling.
 
@@ -42,6 +48,6 @@ class Network:
         """
         try:
             self.client.send(str.encode(data))  # Send data to the server as a string.
-            return self.client.recv(2048).decode()  # Receive and return reply-message as a string.
+            return pickle.loads(self.client.recv(2048*2))  # Receive and return reply-message as a string.
         except socket.error as e:
             print("send failed", e)  # Error-handling.

@@ -17,9 +17,9 @@ FPS = 200
 
 #  DEFINING SCREENS
 titleScreen = TitleScreen(surface)
-connectionScreen = ConnectionScreen(surface)
+connectScreen = ConnectScreen(surface)
 gameScreen = GameScreen(surface)
-set_all_scenes({"titleScreen": titleScreen, "connectionScreen": connectionScreen, "gameScreen": gameScreen})
+set_all_scenes({"titleScreen": titleScreen, "connectScreen": connectScreen, "gameScreen": gameScreen})
 set_scene(titleScreen)
 
 #  DEFINING TEXTURES (TEST)
