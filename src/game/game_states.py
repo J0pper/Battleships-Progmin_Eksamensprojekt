@@ -2,14 +2,13 @@ import os
 import sys
 
 import pygame as pg
-import pickle
 
 from widgets import Node, TexturedNode, ButtonNode
 from objects_and_utils import *
 from board import Board
 import socket
 
-from networking2.network import Network
+from networking.network import Network
 
 
 gameScenes: dict = {}
@@ -147,7 +146,7 @@ class GameScreen:
         self.readyButton = ButtonNode(self.surface, z_index=20,
                                       action=lambda: button_validater("gameScreen",
                                                                       lambda: self.ready_up()))
-        self.winText = Node(self.surface, pos=(mid[0]*0.8, mid[1]*0.25), text="")
+        self.winText = Node(self.surface, pos=(mid[0]*0.8, mid[1]*0.15), text="")
 
         # LOAD TEXTURES FOR GAME SCREEN NODES.
         gameScreenBG.set_texture("../../textures/elements/GUI_table.png", linear_scaling=True,
@@ -171,7 +170,6 @@ class GameScreen:
         self.ships = self.generate_ships("../../textures/boats", self.playerBoard.get_tiles())
 
         self.playerTurn: int = 0
-
 
     def draw(self):
         global network, boardManager
@@ -266,15 +264,12 @@ class GameScreen:
             self.enemyBoard.touch_tile(tile)
 
     def check_for_winner(self):
-        if self.playerBoard.get_hit() == 17 and playerNumber == 0:
+        print(playerNumber, self.playerBoard.get_hit(), self.enemyBoard.get_hit(), boardManager.player1Board, boardManager.player2Board)
+        if self.playerBoard.get_hit() == 17:
             print("you won")
-            return True, "You won!"
-        elif self.playerBoard.get_hit() == 17 and playerNumber == 1:
             return True, "You lost :("
-        elif self.enemyBoard.get_hit() == 17 and playerNumber == 1:
+        if self.enemyBoard.get_hit() == 17:
             return True, "You won!"
-        elif self.enemyBoard.get_hit() == 17 and playerNumber == 0:
-            return True, "You lost :("
         else:
             return False, ""
 

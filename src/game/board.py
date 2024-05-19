@@ -131,5 +131,4 @@ class Board:
         for tile in self.tileGrid:
             if tile.touched and tile.shipState == 1:
                 hit += 1
-        print(hit)
         return hit
