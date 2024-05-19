@@ -264,9 +264,7 @@ class GameScreen:
             self.enemyBoard.touch_tile(tile)
 
     def check_for_winner(self):
-        print(playerNumber, self.playerBoard.get_hit(), self.enemyBoard.get_hit(), boardManager.player1Board, boardManager.player2Board)
         if self.playerBoard.get_hit() == 17:
-            print("you won")
             return True, "You lost :("
         if self.enemyBoard.get_hit() == 17:
             return True, "You won!"
