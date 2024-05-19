@@ -22,10 +22,6 @@ gameScreen = GameScreen(surface)
 set_all_scenes({"titleScreen": titleScreen, "connectScreen": connectScreen, "gameScreen": gameScreen})
 set_scene(titleScreen)
 
-#  DEFINING TEXTURES (TEST)
-nyTexturedDims = TexturedNode(surface)
-nyTexturedDims.set_texture("../../textures/test/Marck_SUCK.png")
-
 
 #  GAME RUN
 running = True
@@ -50,7 +46,6 @@ while running:
                     break
 
     get_scene().draw()
-    nyTexturedDims.pos = pg.mouse.get_pos()
     pg.display.flip()
 
 pg.quit()

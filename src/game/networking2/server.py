@@ -1,7 +1,7 @@
 import socket
 from _thread import *
 import pickle
-from board_manager import BoardManager
+from src.game.board_manager import BoardManager
 
 
 def start_server():
@@ -38,26 +38,29 @@ def start_server():
 
         if currPlayerAmount % 2 != 1:
             boardManager = BoardManager()
+        else:
+            boardManager.connectReady = True
 
         start_new_thread(threaded_client, (conn, currPlayerAmount, boardManager))
         currPlayerAmount += 1
 
 
 def threaded_client(connection, player, board_manager):
-    print("sup")
     connection.send(str.encode(str(player)))
-    print("sup2")
 
     while True:
         try:
-            data = connection.recv(4096).decode()
-            print(data)
+            data = pickle.loads(connection.recv(4096*8))
+            # print(pickle.loads(data))
             if not data:
                 print("Didn't receive data. Disconnected as a result.")
                 break
-
+            if data[0] == "ready":
+                board_manager.ready(player, data[1])
+            if data == "flip_turn":
+                board_manager.flip_turn()
             if data != "get":
-                board_manager.update_boards(player, pickle.loads(data))
+                board_manager.update_boards(player, data)
             connection.sendall(pickle.dumps(board_manager))
 
         except socket.error as err:

@@ -47,7 +47,7 @@ class Node(pg.sprite.Sprite):
         self.update()
 
     def re_size(self, new_size):
-        self.size = new_size
+        self.size = list(new_size)
         self.update()
 
     def draw_text(self):
@@ -57,6 +57,10 @@ class Node(pg.sprite.Sprite):
     def rotate_rect(self):
         self.size = self.size[::-1]
         self.update()
+
+    def update_text(self, new_text):
+        self.text = new_text
+        self.textSurface = self.font.render(new_text, 1, (255, 255, 255))
 
 
 class TexturedNode(Node):

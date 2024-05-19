@@ -1,6 +1,5 @@
 import os
 import sys
-from _thread import *
 
 import pygame as pg
 import pickle
@@ -16,8 +15,9 @@ from networking2.network import Network
 gameScenes: dict = {}
 currentScene = None
 
-network = None
-playerNumber= None
+network: Network = None
+playerNumber = None
+boardManager = None
 
 
 def get_scene():
@@ -62,7 +62,7 @@ class TitleScreen:
         title.set_texture("../../textures/title_screen/title.png", linear_scaling=True,
                           scale_by=scaleFactor[0],  prioritize_texture_size=True)
         startButton.set_texture("../../textures/title_screen/NORMAL_Start.png",
-                               linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
+                                linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
 
         background.move(mid)
         title.move(mid)
@@ -84,16 +84,7 @@ class ConnectScreen:
         self.conScrSpriteGroup = pg.sprite.Group()
 
         res = self.surface.get_size()
-        scaleFactor = (res[0] / 320, res[1] / 180)
         mid = (res[0] / 2, res[1] / 2)
-        startButton = ButtonNode(self.surface,
-                                 action=lambda: button_validater("connectScreen",
-                                                                 lambda: set_scene(gameScenes["gameScreen"])))
-        startButton.set_texture("../../textures/title_screen/NORMAL_Start.png",
-                                linear_scaling=True, scale_by=scaleFactor[0], prioritize_texture_size=True)
-        startButton.move((mid[0], mid[1]*1.5))
-
-        self.conScrSpriteGroup.add(startButton)
 
         ipAddress = socket.gethostbyname(socket.gethostname())
 
@@ -109,12 +100,22 @@ class ConnectScreen:
         for text in self.text:
             text.draw_text()
 
+        global network, playerNumber, boardManager
         if self.firstRun:
-            global network, playerNumber
             network = Network()
             playerNumber = int(network.get_connection_message())
-            print(playerNumber)
+            print("playerNumber", playerNumber)
             self.firstRun = False
+        try:
+            boardManager = network.send("get")
+        except:
+            print("Couldn't get board manager")
+            pg.quit()
+            sys.exit()
+
+        if boardManager.connectReady:
+            print("2 PLAYS CONNECTED")
+            button_validater("connectScreen", set_scene(gameScenes["gameScreen"]))
 
 
 # GAME SCREEN CLASS
@@ -136,57 +137,88 @@ class GameScreen:
         self.playerBoard = Board(self.surface, "../../textures/elements/spillerpladeWgrid_you.png",
                                  leftBoardPos, scaleFactor)
         self.enemyBoard = Board(self.surface, "../../textures/elements/spillerpladeWgrid_enemy.png",
-                                rightBoardPos, scaleFactor, tile_click_action=lambda: self.attempt_strike())
-        self.boardManager = None
+                                rightBoardPos, scaleFactor,
+                                tile_click_action=lambda: button_validater("gameScreen",
+                                                                           lambda: self.attempt_strike()))
 
         # CREATE GAME SCREEN NODES.
         gameScreenBG = TexturedNode(self.surface)
         self.shipCompartment = TexturedNode(self.surface)
+        self.readyButton = ButtonNode(self.surface, z_index=20,
+                                      action=lambda: button_validater("gameScreen",
+                                                                      lambda: self.ready_up()))
+        self.winText = Node(self.surface, pos=(mid[0]*0.8, mid[1]*0.25), text="")
 
         # LOAD TEXTURES FOR GAME SCREEN NODES.
-        gameScreenBG.set_texture("../../textures/elements/GUI_table.png", True,
-                                 scale_by=scaleFactor[0], prioritize_texture_size=True)
-        self.shipCompartment.set_texture("../../textures/elements/GUI_remaining106x35.png", True,
-                                         scale_by=scaleFactor[0], prioritize_texture_size=True)
+        gameScreenBG.set_texture("../../textures/elements/GUI_table.png", linear_scaling=True,
+                                 scale_by=scaleFactor[0])
+        self.shipCompartment.set_texture("../../textures/elements/GUI_remaining106x35.png",
+                                         linear_scaling=True, scale_by=scaleFactor[0])
         self.shipCompartment.rotate_image()
+
+        self.readyButton.set_texture("../../textures/elements/ready.png", linear_scaling=True,
+                                     scale_by=scaleFactor[0])
 
         # MOVE SCREEN NODES.
         gameScreenBG.move(mid)
         self.shipCompartment.move((self.shipCompartment.size[0] / 2, mid[1]))
+        self.readyButton.move((mid[0], mid[1]*1.75))
 
         # ADD SCREEN NODES TO THE SPRITE-GROUPS.
-        self.otherSprites.add(gameScreenBG, self.shipCompartment)
+        self.otherSprites.add(gameScreenBG, self.shipCompartment, self.readyButton)
 
         # GENERATE THE SHIPS.
         self.ships = self.generate_ships("../../textures/boats", self.playerBoard.get_tiles())
 
-        self.playerTurn = False
-        self.strikePins = []
-        self.missPins = []
+        self.playerTurn: int = 0
+
 
     def draw(self):
+        global network, boardManager
         try:
-            self.boardManager = self.network.send("get")
-            self.network.send(pickle.dumps(self.enemyBoard))
+            # print(self.enemyBoard.get_formatted_tiles())
+            boardManager = network.send("get")
+            network.send(self.enemyBoard.get_formatted_tiles())
         except:
             print("Couldn't get board manager")
             pg.quit()
             sys.exit()
 
         self.otherSprites.draw(self.surface)
-        self.playerBoard.get_board_sprite_group().draw(self.surface)
-        self.enemyBoard.get_board_sprite_group().draw(self.surface)
+        self.playerBoard.get_board_sprite_group()[0].draw(self.surface)
+        self.enemyBoard.get_board_sprite_group()[0].draw(self.surface)
         Ship.shipSpriteGroup.draw(self.surface)
+        self.playerBoard.get_board_sprite_group()[1].draw(self.surface)
+        self.enemyBoard.get_board_sprite_group()[1].draw(self.surface)
+        self.winText.draw_text()
 
-        for ship in self.ships:
-            if ship.hover:
-                ship.move_ship(ship.follow_cursor())
-                if pg.mouse.get_pressed()[2]:
-                    if ship.allowRotate:
-                        ship.allowRotate = False
-                        ship.rotate_ship()
-                else:
-                    ship.allowRotate = True
+        if not self.enemyBoard.shipReady:
+            for ship in self.ships:
+                if ship.hover:
+                    ship.move_ship(ship.follow_cursor())
+                    if pg.mouse.get_pressed()[2]:
+                        if ship.allowRotate:
+                            ship.allowRotate = False
+                            ship.rotate_ship()
+                    else:
+                        ship.allowRotate = True
+
+        if boardManager.shipReady:
+            if playerNumber == 0:
+                self.playerBoard.update_touched_tiles(boardManager.player2Board)
+                self.enemyBoard.update_ship_state(boardManager.player2ShipStates)
+            elif playerNumber == 1:
+                self.playerBoard.update_touched_tiles(boardManager.player1Board)
+                self.enemyBoard.update_ship_state(boardManager.player1ShipStates)
+
+        self.playerBoard.update_textures()
+        self.enemyBoard.update_textures()
+
+        self.playerTurn = boardManager.playerTurn
+
+        winner = self.check_for_winner()
+        if winner[0]:
+            self.winText.update_text(winner[1])
 
     def generate_ships(self, texture_directory, tile_grid: list[Tile]):
         ships: list[Ship] = []
@@ -209,13 +241,42 @@ class GameScreen:
                               startPositions[i], tile_grid))
         return ships
 
+    def ready_up(self):
+        global network
+        coveredTiles: int = 0
+        for tile in self.playerBoard.get_tiles():
+            if tile.shipState == 1:
+                coveredTiles += 1
+        if coveredTiles == 17:
+            self.playerBoard.shipReady = True
+            self.enemyBoard.shipReady = True
+            network.send(("ready", self.playerBoard.get_occupied_tiles()))
+
     def attempt_strike(self):
-        print(ButtonNode.lastClicked)
+        global boardManager, playerNumber
+        if not boardManager.shipReady:
+            return
+        if self.playerTurn != playerNumber:
+            return
+        network.send("flip_turn")
+
         for tile in self.enemyBoard.get_tiles():
             if tile.sprite != ButtonNode.lastClicked[0]:
                 continue
-            print("bruh?")
-            self.enemyBoard.add_markers(tile)
+            self.enemyBoard.touch_tile(tile)
+
+    def check_for_winner(self):
+        if self.playerBoard.get_hit() == 17 and playerNumber == 0:
+            print("you won")
+            return True, "You won!"
+        elif self.playerBoard.get_hit() == 17 and playerNumber == 1:
+            return True, "You lost :("
+        elif self.enemyBoard.get_hit() == 17 and playerNumber == 1:
+            return True, "You won!"
+        elif self.enemyBoard.get_hit() == 17 and playerNumber == 0:
+            return True, "You lost :("
+        else:
+            return False, ""
 
 
 # SHIP CLASS
@@ -325,10 +386,10 @@ class Ship:
     def ships_touching(self) -> bool:
         affectedTiles = self.get_touching_tiles()
         for tile in affectedTiles:
-            if tile.shipState == "occupied":
+            if tile.shipState == 1:
                 return True
         for tile in self.coveredTiles:
-            tile.shipState = "unoccupied"
+            tile.shipState = 0
         return False
 
     def update_tile_occupancy(self, clear: bool = False):
@@ -336,10 +397,10 @@ class Ship:
         self.coveredTiles = affectedTiles
         for tile in affectedTiles:
             if clear:
-                tile.shipState = "unoccupied"
+                tile.shipState = 0
                 self.coveredTiles = []
                 continue
-            tile.shipState = "occupied"
+            tile.shipState = 1
 
     def get_touching_tiles(self) -> list[Tile]:
         affectedTiles: list[Tile] = []

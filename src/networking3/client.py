@@ -131,10 +131,10 @@ def main():
                     if btn.click(pos) and game.connected():
                         if player == 0:
                             if not game.p1Went:
-                                game.play(player, btn.text)
+                                n.send(btn.text)
                         else:
                             if not game.p2Went:
-                                game.play(player, btn.text)
+                                n.send(btn.text)
 
         redrawWindow(win, game, player)
 
@@ -158,6 +158,7 @@ def menu_screen():
                 run = False
 
     main()
+
 
 while True:
     menu_screen()

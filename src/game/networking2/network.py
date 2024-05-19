@@ -26,13 +26,8 @@ class Network:
         :return: Returns the initially send message as a string.
         """
         try:
-            print("hello")
             self.client.connect((self.server, self.port))  # Connect to server.
-            print("hello2")
-            message = self.client.recv(2048).decode()  # Receive and return reply-message as string.
-            print("hello3")
-            print(message)
-            return message
+            return self.client.recv(2048).decode()  # Receive and return reply-message as string.
         except socket.error as e:
             print("connect_server failed", e)  # Error-handling.
 
@@ -47,7 +42,7 @@ class Network:
         :return: Receives a reply-message from the server as a string.
         """
         try:
-            self.client.send(str.encode(data))  # Send data to the server as a string.
+            self.client.send(pickle.dumps(data))  # Send data to the server as a string.
             return pickle.loads(self.client.recv(2048*2))  # Receive and return reply-message as a string.
         except socket.error as e:
             print("send failed", e)  # Error-handling.
