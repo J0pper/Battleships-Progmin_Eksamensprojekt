@@ -6,13 +6,13 @@ class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Creates a new socket per client.
         # self.server = socket.gethostbyname(socket.gethostname())  # Grabs your local IPv4 address.
-        self.server = input("Server IP-address here: ")
-        self.port = int(input("Port here: "))  # Specify a free port on your internet connection.
+        self.server: str = input("Server IP-address here: ")
+        self.port: int = int(input("Port here: "))  # Specify a free port on your internet connection.
         self.connectMessage: str = self.connect_server()  # Connects the client socket with the server.
 
     # Passer function.
     # Might be useful, might need to be deleted.
-    def get_connection_message(self):
+    def get_connection_message(self) -> str:
         return self.connectMessage
 
     def connect_server(self) -> str:

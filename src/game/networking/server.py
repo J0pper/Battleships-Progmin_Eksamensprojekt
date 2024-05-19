@@ -51,7 +51,6 @@ def threaded_client(connection, player, board_manager):
     while True:
         try:
             data = pickle.loads(connection.recv(4096*8))
-            # print(pickle.loads(data))
             if not data:
                 print("Didn't receive data. Disconnected as a result.")
                 break

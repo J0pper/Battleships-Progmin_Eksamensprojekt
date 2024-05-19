@@ -1,11 +1,13 @@
 import pygame as pg
+from typing import Union, NoReturn
 
 
 class Node(pg.sprite.Sprite):
-    def __init__(self, surface, size: tuple[int, int] = None, pos: tuple[int, int] = None,
-                 color: tuple[int, int, int] = None, corner_radius: int = 0, text: str = None):
+    def __init__(self, surface: pg.Surface, size: tuple[int, int] = None,
+                 pos: tuple[Union[float, int], Union[float, int]] = None, color: tuple[int, int, int] = None,
+                 text: str = None):
         pg.sprite.Sprite.__init__(self)
-        self.surface = surface
+        self.surface: pg.Surface = surface
 
         if size is None:
             size = (100, 100)
@@ -22,18 +24,17 @@ class Node(pg.sprite.Sprite):
         self.size: list[int] = list(size)
         self.pos: list[int] = list(pos)
         self.color: list[int] = list(color)
-        self.corner_radius: int = corner_radius
-        self.text = text
-        self.font = pg.font.SysFont('Arial', 30)
-        self.textSurface = self.font.render(text, 1, (255, 255, 255))
+        self.text: str = text
+        self.font: pg.font.Font = pg.font.SysFont('Arial', 30)
+        self.textSurface: pg.Surface = self.font.render(text, 1, (255, 255, 255))
         self.withColor: bool = False
 
-        self.nodeRect = pg.Rect(*self.pos, *self.size)
+        self.nodeRect: pg.Rect = pg.Rect(*self.pos, *self.size)
         self.image = pg.Surface(self.size)
         self.image.set_alpha(0)
         self.rect = self.nodeRect
 
-    def update(self):
+    def update(self) -> NoReturn:
         self.nodeRect.size = self.size
         self.nodeRect.center = self.pos
         self.rect = self.nodeRect
@@ -42,42 +43,42 @@ class Node(pg.sprite.Sprite):
             self.image.set_alpha(255)
             self.image.fill(self.color)
 
-    def move(self, new_pos):
+    def move(self, new_pos) -> NoReturn:
         self.pos = new_pos
         self.update()
 
-    def re_size(self, new_size):
+    def re_size(self, new_size) -> NoReturn:
         self.size = list(new_size)
         self.update()
 
-    def draw_text(self):
+    def draw_text(self) -> NoReturn:
         if self.withText:
             self.surface.blit(self.textSurface, self.nodeRect.center)
 
-    def rotate_rect(self):
+    def rotate_rect(self) -> NoReturn:
         self.size = self.size[::-1]
         self.update()
 
-    def update_text(self, new_text):
+    def update_text(self, new_text: str) -> NoReturn:
         self.text = new_text
         self.textSurface = self.font.render(new_text, 1, (255, 255, 255))
 
 
 class TexturedNode(Node):
-    def __init__(self, surface, default_texture: bool = True):
+    def __init__(self, surface: pg.Surface, default_texture: bool = True):
         pg.sprite.Sprite.__init__(self)
         super().__init__(surface=surface)
 
-        self.angle = 0
+        self.angle: int = 0
 
         if default_texture:
-            self.defaultTexture = pg.image.load("../../textures/test/NO_TEXTURE.png")
-            self.buttonTexture = self.defaultTexture
+            self.defaultTexture: pg.Surface = pg.image.load("../../textures/test/NO_TEXTURE.png")
+            self.buttonTexture: pg.Surface = self.defaultTexture
             self.set_texture("../../textures/test/NO_TEXTURE.png", scale_by=self.size)
             self.update()
 
     def set_texture(self, texture_path: str, linear_scaling: bool = False, scale_by=None,
-                    prioritize_texture_size: bool = True):
+                    prioritize_texture_size: bool = True) -> NoReturn:
         self.buttonTexture = pg.image.load(texture_path)
 
         if scale_by is None:
@@ -98,7 +99,7 @@ class TexturedNode(Node):
         self.image = self.buttonTexture
         self.update()
 
-    def rotate_image(self):
+    def rotate_image(self) -> NoReturn:
         self.angle += 90
         if self.angle > 270:
             self.angle = 0
@@ -107,10 +108,10 @@ class TexturedNode(Node):
 
 
 class ButtonNode(TexturedNode):
-    registry: list[tuple] = []
-    lastClicked = [0]
+    registry: list[tuple['ButtonNode', int]] = []
+    lastClicked: list['ButtonNode'] = [0]  # 0 is just a placeholder
 
-    def __init__(self, surface, z_index: int = 0, action=None, default_texture: bool = True):
+    def __init__(self, surface: pg.Surface, z_index: int = 0, action=None, default_texture: bool = True):
         pg.sprite.Sprite.__init__(self)
         super().__init__(surface=surface, default_texture=default_texture)
 
@@ -119,7 +120,7 @@ class ButtonNode(TexturedNode):
         self.clickable = True
         self.action = action
 
-    def on_click(self, mouse_pos) -> bool:
+    def on_click(self, mouse_pos: tuple[int, int]) -> bool:
         if not self.clickable:
             return False
         if not self.nodeRect.collidepoint(mouse_pos):

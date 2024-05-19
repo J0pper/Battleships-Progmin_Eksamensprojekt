@@ -11,10 +11,6 @@ print(RES)
 pg.display.set_caption("Ships & Explosions")
 # surface = pg.display.set_mode((0, 0), pg.FULLSCREEN)
 
-# SPEED/FPS
-clock = pg.time.Clock()
-FPS = 200
-
 #  DEFINING SCREENS
 titleScreen = TitleScreen(surface)
 connectScreen = ConnectScreen(surface)
@@ -26,10 +22,6 @@ set_scene(titleScreen)
 #  GAME RUN
 running = True
 while running:
-    surface.fill((34, 34, 34))
-
-    # clock.tick(FPS)
-
     # Listen for key events to QUIT the game and close upgrading screen.
     for event in pg.event.get():
         # QUIT GAME

@@ -1,22 +1,24 @@
 import os
 import sys
+import socket
+from typing import Union, NoReturn, Any, Self
 
 import pygame as pg
 
 from widgets import Node, TexturedNode, ButtonNode
-from objects_and_utils import *
-from board import Board
-import socket
+from utils import *
+from board import Board, Tile
 
 from networking.network import Network
+from board_manager import BoardManager
 
 
-gameScenes: dict = {}
-currentScene = None
+gameScenes: dict[str, Any] = {}
+currentScene: Union = None
 
-network: Network = None
-playerNumber = None
-boardManager = None
+network: Union[Network, None] = None
+playerNumber: int = 0
+boardManager: Union[BoardManager, None] = None
 
 
 def get_scene():
@@ -43,18 +45,18 @@ def button_validater(from_scene, action):
 
 #  TITLE SCREEN CLASS
 class TitleScreen:
-    def __init__(self, surface):
-        self.surface = surface
+    def __init__(self, surface: pg.Surface):
+        self.surface: pg.Surface = surface
 
-        background = TexturedNode(self.surface)
-        title = TexturedNode(self.surface)
-        startButton = ButtonNode(self.surface,
-                                 action=lambda: button_validater("titleScreen",
-                                                                 lambda: set_scene(gameScenes["connectScreen"])))
+        background: TexturedNode = TexturedNode(self.surface)
+        title: TexturedNode = TexturedNode(self.surface)
+        startButton: ButtonNode = ButtonNode(self.surface,
+                                             action=lambda: button_validater("titleScreen",
+                                                                             lambda: set_scene(gameScenes["connectScreen"])))
 
-        res = self.surface.get_size()
-        scaleFactor = [res[0] / 320, res[1] / 180]
-        mid = (res[0] / 2, res[1] / 2)
+        res: tuple[int, int] = self.surface.get_size()
+        scaleFactor: tuple[float, float] = (res[0] / 320, res[1] / 180)
+        mid: tuple[float, float] = (res[0] / 2, res[1] / 2)
 
         background.set_texture("../../textures/title_screen/background.png", linear_scaling=True,
                                scale_by=scaleFactor[0], prioritize_texture_size=True)
@@ -67,7 +69,7 @@ class TitleScreen:
         title.move(mid)
         startButton.move((mid[0], mid[1] * 1.5))
 
-        self.titScrSpriteGroup = pg.sprite.Group()
+        self.titScrSpriteGroup: pg.sprite.Group = pg.sprite.Group()
         self.titScrSpriteGroup.add(background, title, startButton)
 
     def draw(self):
@@ -80,22 +82,16 @@ class ConnectScreen:
 
         self.surface = surface
 
-        self.conScrSpriteGroup = pg.sprite.Group()
+        ipAddress: str = socket.gethostbyname(socket.gethostname())
 
-        res = self.surface.get_size()
-        mid = (res[0] / 2, res[1] / 2)
-
-        ipAddress = socket.gethostbyname(socket.gethostname())
-
-        titleText = Node(self.surface, pos=(100, 40), text="Waiting for players...")
-        ipText1 = Node(self.surface, pos=(100, 80), text="Your local IP-address is:")
-        ipText2 = Node(self.surface, pos=(100, 110), text=f"{ipAddress}")
-        bottomText = Node(self.surface, pos=(100, 140), text="Share it with your friend to play!")
+        titleText: Node = Node(self.surface, pos=(100, 40), text="Waiting for players...")
+        ipText1: Node = Node(self.surface, pos=(100, 80), text="Your local IP-address is:")
+        ipText2: Node = Node(self.surface, pos=(100, 110), text=f"{ipAddress}")
+        bottomText: Node = Node(self.surface, pos=(100, 140), text="Share it with your friend to play!")
         self.text: list[Node] = [titleText, ipText1, ipText2, bottomText]
 
     def draw(self):
         self.surface.fill((34, 34, 34))
-        self.conScrSpriteGroup.draw(self.surface)
         for text in self.text:
             text.draw_text()
 
@@ -119,18 +115,16 @@ class ConnectScreen:
 
 # GAME SCREEN CLASS
 class GameScreen:
-    def __init__(self, surface):
-        self.surface = surface
+    def __init__(self, surface: pg.Surface):
+        self.surface: pg.Surface = surface
 
         # CREATE DIFFERENT VARIABLES USED FOR SCALING AND POSITIONING NODES
-        res = self.surface.get_size()
-        scaleFactor: tuple = (res[0] / 320, res[1] / 180)
-        mid = (res[0] / 2, res[1] / 2)
+        res: tuple[int, int] = self.surface.get_size()
+        scaleFactor: tuple[float, float] = (res[0] / 320, res[1] / 180)
+        mid: tuple[float, float] = (res[0] / 2, res[1] / 2)
         leftBoardPos = (res[0] * 6/20, res[1] / 2)
         rightBoardPos = (res[0] * 14/20, res[1] / 2)
 
-        # self.playerSpriteGroup = pg.sprite.Group()
-        # self.enemySpriteGroup = pg.sprite.Group()
         self.otherSprites = pg.sprite.Group()
 
         self.playerBoard = Board(self.surface, "../../textures/elements/spillerpladeWgrid_you.png",
@@ -167,14 +161,13 @@ class GameScreen:
         self.otherSprites.add(gameScreenBG, self.shipCompartment, self.readyButton)
 
         # GENERATE THE SHIPS.
-        self.ships = self.generate_ships("../../textures/boats", self.playerBoard.get_tiles())
+        self.ships: list[Ship] = self.generate_ships("../../textures/boats", self.playerBoard.get_tiles())
 
         self.playerTurn: int = 0
 
-    def draw(self):
+    def draw(self) -> NoReturn:
         global network, boardManager
         try:
-            # print(self.enemyBoard.get_formatted_tiles())
             boardManager = network.send("get")
             network.send(self.enemyBoard.get_formatted_tiles())
         except:
@@ -198,6 +191,7 @@ class GameScreen:
                         if ship.allowRotate:
                             ship.allowRotate = False
                             ship.rotate_ship()
+                        continue
                     else:
                         ship.allowRotate = True
 
@@ -218,7 +212,7 @@ class GameScreen:
         if winner[0]:
             self.winText.update_text(winner[1])
 
-    def generate_ships(self, texture_directory, tile_grid: list[Tile]):
+    def generate_ships(self, texture_directory: str, tile_grid: list[Tile]) -> list['Ship']:
         ships: list[Ship] = []
         shipTextures: list = os.listdir(texture_directory)
 
@@ -239,7 +233,7 @@ class GameScreen:
                               startPositions[i], tile_grid))
         return ships
 
-    def ready_up(self):
+    def ready_up(self) -> NoReturn:
         global network
         coveredTiles: int = 0
         for tile in self.playerBoard.get_tiles():
@@ -250,7 +244,7 @@ class GameScreen:
             self.enemyBoard.shipReady = True
             network.send(("ready", self.playerBoard.get_occupied_tiles()))
 
-    def attempt_strike(self):
+    def attempt_strike(self) -> None:
         global boardManager, playerNumber
         if not boardManager.shipReady:
             return
@@ -263,10 +257,8 @@ class GameScreen:
                 continue
             self.enemyBoard.touch_tile(tile)
 
-    def check_for_winner(self):
-        print(playerNumber, self.playerBoard.get_hit(), self.enemyBoard.get_hit(), boardManager.player1Board, boardManager.player2Board)
+    def check_for_winner(self) -> tuple[bool, str]:
         if self.playerBoard.get_hit() == 17:
-            print("you won")
             return True, "You lost :("
         if self.enemyBoard.get_hit() == 17:
             return True, "You won!"
@@ -279,9 +271,9 @@ class Ship:
     shipSpriteGroup = pg.sprite.Group()
     shipMoving: bool = False
 
-    def __init__(self, surface, texture_path, start_pos, board: list[Tile]):
-        res = surface.get_size()
-        self.scaleFactor = [res[0] / 320, res[1] / 180]
+    def __init__(self, surface: pg.Surface, texture_path: str, start_pos: tuple[float, float], board: list[Tile]):
+        res: tuple[int, int] = surface.get_size()
+        self.scaleFactor: tuple[float, float] = (res[0] / 320, res[1] / 180)
 
         self.ship: ButtonNode = ButtonNode(surface, z_index=20, action=lambda: self.toggle_hover())
         self.ship.set_texture(texture_path, linear_scaling=True,
@@ -289,18 +281,18 @@ class Ship:
         self.ship.pos = start_pos
         self.shipSpriteGroup.add(self.ship)
         self.ship.update()
-        self.ship.color = (255, 0, 0)
+
         self.coveredTiles: list[Tile] = []
         self.board: list[Tile] = board
-        self.shipLengthInTiles = first_n_digits(max(*self.ship.size) / self.scaleFactor[0], 1)
+        self.shipLengthInTiles: int = first_n_digits(max(*self.ship.size) / self.scaleFactor[0], 1)
 
         self.hover: bool = False
 
-        self.offset: tuple = ()
+        self.offset: tuple[int, int] = (0, 0)
 
         self.allowRotate: bool = True
 
-    def toggle_hover(self):
+    def toggle_hover(self) -> None:
         if self.hover:
             if self.snap_ship():
                 self.hover = False
@@ -310,11 +302,11 @@ class Ship:
         if Ship.shipMoving:
             return
         self.update_tile_occupancy(clear=True)
-        self.offset = (pg.mouse.get_pos()[0] - self.ship.pos[0], pg.mouse.get_pos()[1] - self.ship.pos[1])
+        self.offset = [pg.mouse.get_pos()[0] - self.ship.pos[0], pg.mouse.get_pos()[1] - self.ship.pos[1]]
         Ship.shipMoving = True
         self.hover = True
 
-    def move_ship(self, new_pos):
+    def move_ship(self, new_pos: tuple[int, int]):
         self.ship.move(new_pos)
         self.ship.update()
 
@@ -323,7 +315,7 @@ class Ship:
 
     def snap_ship(self) -> bool:
         targetTile = self.generate_distance_array()[0]
-        targetTilePos = []
+        targetTilePos: tuple[int, int] = (0, 0)
         for tile in self.board:
             if tile.index != targetTile[0]:
                 continue
@@ -342,13 +334,13 @@ class Ship:
         if self.ships_touching():
             return False
 
-        self.move_ship(tuple(targetTilePos))
+        self.move_ship(targetTilePos)
         return True
 
-    def generate_distance_array(self) -> list[tuple[tuple, float]]:
-        tileDistances: list[tuple[tuple, float]] = []
+    def generate_distance_array(self) -> list[tuple[tuple[int, int], float]]:
+        tileDistances: list[tuple[tuple[int, int], float]] = []
 
-        shipPos = self.ship.pos
+        shipPos: tuple[int, int] = (self.ship.pos[0], self.ship.pos[1])
         # Offset the position of the 2 and 4 tile long ships. If we don't do this, it calculated the distance based
         # of the center of the ship, which works fine for the 3 and 5 tile long ships since their center will be
         # centered in the tile no matter what. But for the ships with even tile length, their center is in the middle
@@ -366,7 +358,7 @@ class Ship:
         sortedTileDistances = sorted(tileDistances, key=lambda distance: distance[1])
         return sortedTileDistances
 
-    def inside_borders(self, target_tile_pos: tuple) -> bool:
+    def inside_borders(self, target_tile_pos: tuple[int, int]) -> bool:
         shipTopLeft = (target_tile_pos[0] - self.ship.size[0] / 2, target_tile_pos[1] - self.ship.size[1] / 2)
         shipBottomRight = (target_tile_pos[0] + self.ship.size[0] / 2, target_tile_pos[1] + self.ship.size[1] / 2)
         edgePair1: tuple = (*shipTopLeft, *self.board[-1].sprite.nodeRect.bottomright)
@@ -379,7 +371,7 @@ class Ship:
         return True
 
     def ships_touching(self) -> bool:
-        affectedTiles = self.get_touching_tiles()
+        affectedTiles: list[Tile] = self.get_touching_tiles()
         for tile in affectedTiles:
             if tile.shipState == 1:
                 return True
@@ -399,10 +391,10 @@ class Ship:
 
     def get_touching_tiles(self) -> list[Tile]:
         affectedTiles: list[Tile] = []
-        shipEdges: tuple = (*self.ship.nodeRect.topleft, *self.ship.nodeRect.bottomright)
+        shipEdges: tuple[Union[Any, tuple[int, int]], Union[Any, tuple[int, int]]] =\
+            (*self.ship.nodeRect.topleft, *self.ship.nodeRect.bottomright)
         for tile in self.board:
             tilePos = tile.sprite.pos
-            tile.sprite.withColor = True
             if shipEdges[0] > tilePos[0]:
                 continue
             if shipEdges[2] < tilePos[0]:
@@ -414,7 +406,7 @@ class Ship:
             affectedTiles.append(tile)
         return affectedTiles
 
-    def rotate_ship(self):
+    def rotate_ship(self) -> NoReturn:
         self.offset = self.offset[::-1]
         self.move_ship(self.follow_cursor())
         self.ship.rotate_image()

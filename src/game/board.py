@@ -1,29 +1,23 @@
 
 from widgets import *
-from objects_and_utils import midpoint
-import sys
+from utils import midpoint
 
 
 class Tile:
-    def __init__(self, index: tuple[int, int], sprite):
+    def __init__(self, index: tuple[int, int], sprite: ButtonNode):
         self.index: tuple[int, int] = index
-        self.sprite = sprite
+        self.sprite: ButtonNode = sprite
         self.touched: bool = False
         self.shipState: int = 0  # 0 = unoccupied, 1 = occupied
 
-    def set_ship_state(self):
-        pass
-
-    def set_hit_state(self):
-        pass
-
 
 class Board:
-    def __init__(self, surface, board_texture, board_pos, scale_factor, tile_click_action=lambda: 2+2):
-        self.surface = surface
-        self.boardSpriteGroup = pg.sprite.Group()
-        self.markersSpriteGroup = pg.sprite.Group()
-        self.scaleFactor = scale_factor
+    def __init__(self, surface: pg.Surface, board_texture: str, board_pos, scale_factor: tuple[float, float],
+                 tile_click_action=lambda: 2+2):
+        self.surface: pg.Surface = surface
+        self.boardSpriteGroup: pg.sprite.Group = pg.sprite.Group()
+        self.markersSpriteGroup: pg.sprite.Group = pg.sprite.Group()
+        self.scaleFactor: tuple[float, float] = scale_factor
         self.action = tile_click_action
 
         self.boardTexture = TexturedNode(self.surface)
@@ -35,7 +29,7 @@ class Board:
 
         self.hitMarkerTexturePath = "../../textures/elements/hit_marker.png"
         self.missMarkerTexturePath = "../../textures/elements/miss_marker.png"
-        self.alreadyTexturized = []
+        self.alreadyTexturized: list[Tile] = []
 
         self.shipReady = False
 
@@ -69,7 +63,7 @@ class Board:
                 board.append(tile)
         return board
 
-    def move_board(self, new_pos: tuple[int, int]):
+    def move_board(self, new_pos: tuple[int, int]) -> NoReturn:
         centerPoint = midpoint(self.tileGrid[0].sprite.pos, self.tileGrid[-1].sprite.pos)
         offset = (new_pos[0] - centerPoint[0], new_pos[1] - centerPoint[1])
 
@@ -79,24 +73,23 @@ class Board:
             tile.sprite.move(moveTo)
         self.boardTexture.move(new_pos)
 
-    def touch_tile(self, clicked_tile):
+    def touch_tile(self, clicked_tile: Tile) -> bool:
         if clicked_tile.touched:
             return False
         clicked_tile.touched = True
 
-    def get_tiles(self):
+    def get_tiles(self) -> list[Tile]:
         return self.tileGrid
 
-    def get_board_sprite_group(self):
+    def get_board_sprite_group(self) -> tuple[pg.sprite.Group, pg.sprite.Group]:
         return self.boardSpriteGroup, self.markersSpriteGroup
 
-    def update_textures(self):
+    def update_textures(self) -> NoReturn:
         for tile in self.tileGrid:
             if not tile.touched:
                 continue
             if tile in self.alreadyTexturized:
                 continue
-            tile.sprite.withColor = False
             if tile.shipState == 1:
                 tile.sprite.set_texture(self.hitMarkerTexturePath, linear_scaling=True,
                                         scale_by=self.scaleFactor[0])
@@ -105,28 +98,28 @@ class Board:
                                         scale_by=self.scaleFactor[0])
             self.alreadyTexturized.append(tile)
 
-    def update_touched_tiles(self, other_board):
+    def update_touched_tiles(self, other_board) -> NoReturn:
         for i, tile in enumerate(other_board):
             self.tileGrid[i].touched = tile[0]
 
-    def update_ship_state(self, other_board_ship_states):
+    def update_ship_state(self, other_board_ship_states) -> NoReturn:
         for tile in other_board_ship_states:
             self.tileGrid[tile].shipState = 1
 
-    def get_occupied_tiles(self):
+    def get_occupied_tiles(self) -> list[Tile]:
         occupiedTiles: list = []
         for i, tile in enumerate(self.tileGrid):
             if tile.shipState == 1:
                 occupiedTiles.append(i)
         return occupiedTiles
 
-    def get_formatted_tiles(self):
+    def get_formatted_tiles(self) -> list[tuple[bool, int]]:
         formattedTiles: list = []
         for tile in self.tileGrid:
             formattedTiles.append((tile.touched, tile.shipState))
         return formattedTiles
 
-    def get_hit(self):
+    def get_hit(self) -> int:
         hit: int = 0
         for tile in self.tileGrid:
             if tile.touched and tile.shipState == 1:

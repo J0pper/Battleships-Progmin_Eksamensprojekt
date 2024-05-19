@@ -1,3 +1,4 @@
+from typing import NoReturn
 
 class BoardManager:
     def __init__(self):
@@ -9,16 +10,15 @@ class BoardManager:
         self.p1ShipReady: bool = False
         self.p2ShipReady: bool = False
         self.shipReady: bool = False
-        self.playerTurn = 0  # player 0 or 1
+        self.playerTurn: int = 0  # player 0 or 1
 
-    def update_boards(self, player, board):
+    def update_boards(self, player: int, board: list[tuple[bool, int]]) -> NoReturn:
         if player == 0:
             self.player1Board = board
         elif player == 1:
-
             self.player2Board = board
 
-    def ready(self, player, ship_states):
+    def ready(self, player: int, ship_states: list[int]) -> NoReturn:
         if player == 0:
             self.p1ShipReady = True
             self.player1ShipStates = ship_states
@@ -29,8 +29,7 @@ class BoardManager:
         if self.p1ShipReady and self.p2ShipReady:
             self.shipReady = True
 
-    def flip_turn(self):
-        print("i am flipping")
+    def flip_turn(self) -> NoReturn:
         if self.playerTurn == 0:
             self.playerTurn = 1
         elif self.playerTurn == 1:
