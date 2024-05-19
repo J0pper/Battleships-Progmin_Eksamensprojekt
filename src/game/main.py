@@ -1,3 +1,4 @@
+import pygame as pg
 import sys
 from game_states import *
 
@@ -42,3 +43,5 @@ while running:
 
 pg.quit()
 sys.exit()
+
+
