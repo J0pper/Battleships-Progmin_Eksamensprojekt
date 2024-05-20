@@ -319,7 +319,7 @@ class Ship:
         for tile in self.board:
             if tile.index != targetTile[0]:
                 continue
-            targetTilePos = (tile.sprite.pos[0], tile.sprite.pos[0])
+            targetTilePos = (tile.sprite.pos[0], tile.sprite.pos[1])
             break
         # Grabs the first size of whatever is the ships largest dimension (makes sure it works for all directions) and
         # checks if its odd or even. If its even we know it a 2 or 4 tile long ship, and we can treat it differently.
